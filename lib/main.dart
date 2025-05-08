@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tampilan.dart';
+import 'screens/search_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,6 +9,6 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Tampilan());
+    return MaterialApp(debugShowCheckedModeBanner: false, home: SearchScreen());
   }
 }
