@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788618001984",
+    "project_id": "bookingdoctor-aa6af",
+    "storage_bucket": "bookingdoctor-aa6af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788618001984:android:660960f1b180d495bc29a5",
+        "android_client_info": {
+          "package_name": "com.example.booking_doctor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_-Zg20bP9Ry57WA6Emmeurzlv9c2O-BA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
