@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'tampilan.dart';
 import 'screens/search_screen.dart';
 
 void main() {
