@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/doctor_card.dart';
+import '/screens/doctor_detail_screen.dart';
+import '/screens/history_screen.dart';
 
 class SearchScreen extends StatelessWidget {
+  static const routing = 'cari';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cari Dokter')),
+      appBar: AppBar(
+        title: Text('Cari Dokter'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushReplacementNamed(HistoryScreen.routing);
+              },
+              icon: Icon(Icons.history))
+        ],
+      ),
       body: Column(
         children: [
           DropdownButton<String>(
@@ -26,7 +40,8 @@ class SearchScreen extends StatelessWidget {
                   name: "Dr. Contoh $index",
                   specialty: "Spesialis Umum",
                   onTap: () {
-                    Navigator.pushNamed(context, '/detail');
+                    Navigator.of(context)
+                        .pushReplacementNamed(DoctorDetailScreen.routing);
                   },
                 );
               },

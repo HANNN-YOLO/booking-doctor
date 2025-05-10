@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/chat_bubble.dart';
 
 class ChatScreen extends StatelessWidget {
+  static const routing = 'chat';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
