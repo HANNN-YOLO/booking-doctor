@@ -1,7 +1,7 @@
-import 'package:booking_doctor/screens/booking_screen.dart';
-import 'package:booking_doctor/screens/chat_screen.dart';
-import 'package:booking_doctor/screens/search_screen.dart';
 import 'package:flutter/material.dart';
+import '/screens/booking_screen.dart';
+import '/screens/chat_screen.dart';
+import '/screens/search_screen.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   static const routing = 'detail';

@@ -1,6 +1,6 @@
-import 'package:booking_doctor/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/booking_tile.dart';
+import '/screens/search_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   static const routing = 'history';
