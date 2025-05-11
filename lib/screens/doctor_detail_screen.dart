@@ -34,7 +34,7 @@ class DoctorDetailScreen extends StatelessWidget {
                 ElevatedButton(
                   child: Text("Buat Janji"),
                   onPressed: () {
-                    pesan_booking_screeen(context);
+                    BookingScreen().pesan_booking_screen(context);
                   },
                 ),
                 ElevatedButton(

@@ -1,12 +1,18 @@
-import 'package:booking_doctor/screens/history_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/search_screen.dart';
 import 'screens/doctor_detail_screen.dart';
 import 'screens/chat_screen.dart';
+import 'screens/history_screen.dart';
+import 'package:provider/provider.dart';
+import 'providers/booking_provider.dart';
 // import 'screens/booking_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => BookingProvider(),
+    )
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
