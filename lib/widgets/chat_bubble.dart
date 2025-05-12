@@ -11,7 +11,7 @@ class ChatBubble extends StatelessWidget {
     return Align(
       alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: EdgeInsets.all(8),
+        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSender ? Colors.blue : Colors.grey[300],
@@ -19,7 +19,9 @@ class ChatBubble extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: TextStyle(color: isSender ? Colors.white : Colors.black),
+          style: TextStyle(
+            color: isSender ? Colors.white : Colors.black87,
+          ),
         ),
       ),
     );

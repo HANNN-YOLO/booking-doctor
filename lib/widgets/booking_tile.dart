@@ -9,6 +9,7 @@ class BookingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      leading: Icon(Icons.calendar_today),
       title: Text(doctorName),
       subtitle: Text(date),
     );

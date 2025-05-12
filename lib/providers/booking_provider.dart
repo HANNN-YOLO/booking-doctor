@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 
 class BookingProvider with ChangeNotifier {
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
+  DateTime? selectDateTime;
 
-  void setDate(DateTime date) {
-    selectedDate = date;
-    notifyListeners();
-  }
-
-  void setTime(TimeOfDay time) {
-    selectedTime = time;
+  void setDateTime(DateTime datetime) {
+    selectDateTime = datetime;
     notifyListeners();
   }
 }
