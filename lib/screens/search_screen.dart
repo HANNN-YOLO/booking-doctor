@@ -136,7 +136,8 @@ class SearchScreen extends StatelessWidget {
                     return DoctorCard(
                       name: "dr. Contoh $index",
                       specialty: "Spesialis ${provider.selectedCategory}",
-                      onTap: () => Navigator.pushNamed(context, '/detail'),
+                      onTap: () =>
+                          Navigator.pushReplacementNamed(context, '/detail'),
                     );
                   },
                 ),

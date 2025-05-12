@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/chat_bubble.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChatScreen extends StatelessWidget {
   final List<String> messages = [
@@ -12,7 +13,16 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat Dokter")),
+      appBar: AppBar(
+        title: Text("Chat Dokter"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('/detail');
+              },
+              icon: Icon(Icons.person))
+        ],
+      ),
       body: ListView.builder(
         padding: EdgeInsets.all(16),
         itemCount: messages.length,

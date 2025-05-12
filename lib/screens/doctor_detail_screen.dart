@@ -36,7 +36,7 @@ class DoctorDetailScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/chat');
+                      Navigator.of(context).pushReplacementNamed('/chat');
                     },
                     child: Text("Keluh Kesah"))
               ],
