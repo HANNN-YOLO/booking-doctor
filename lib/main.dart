@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 import 'providers/booking_provider.dart';
 import 'screens/search_screen.dart';
 import 'screens/doctor_detail_screen.dart';
-import 'screens/booking_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/chat_screen.dart';
+import 'providers/search_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => BookingProvider()),
+    ChangeNotifierProvider(create: (context) => SearchProvider()),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +27,6 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => SearchScreen(),
           '/detail': (context) => DoctorDetailScreen(),
-          '/booking': (context) => BookingScreen(),
           '/history': (context) => HistoryScreen(),
           '/chat': (context) => ChatScreen(),
         },
