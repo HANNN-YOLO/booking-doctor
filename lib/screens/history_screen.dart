@@ -67,7 +67,8 @@ class HistoryScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                          Icon(Icons.arrow_forward_ios,
+                              size: 16, color: Colors.grey),
                         ],
                       ),
                     ),
@@ -75,6 +76,13 @@ class HistoryScreen extends StatelessWidget {
                 },
               ),
             ),
+            Container(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('/');
+                    },
+                    child: Text("Kembali")))
           ],
         ),
       ),

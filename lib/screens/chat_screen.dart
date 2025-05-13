@@ -26,7 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             // Navigasi ke layar beranda atau layar sebelumnya
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushReplacementNamed(context, '/detail');
           },
         ),
         title: Row(
@@ -56,7 +56,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     margin: EdgeInsets.symmetric(vertical: 4),
                     decoration: BoxDecoration(
-                      color: index % 2 == 0 ? Colors.grey[300] : Colors.blue[100],
+                      color:
+                          index % 2 == 0 ? Colors.grey[300] : Colors.blue[100],
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
