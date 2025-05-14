@@ -49,3 +49,4 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 }
 
+apply plugin: 'com.google.gms.google-services'

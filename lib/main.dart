@@ -6,6 +6,7 @@ import 'screens/doctor_detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/chat_screen.dart';
 import 'providers/search_provider.dart';
+// import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
