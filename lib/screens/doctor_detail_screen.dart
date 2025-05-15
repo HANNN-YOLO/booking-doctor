@@ -33,7 +33,7 @@ class DoctorDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundImage: AssetImage('assets/doctor_placeholder.png'), // Ganti dengan path gambar Anda
+                        // backgroundImage: AssetImage('assets/doctor_placeholder.png'), // Ganti dengan path gambar Anda
                       ),
                       SizedBox(width: 16),
                       Expanded(
@@ -45,7 +45,8 @@ class DoctorDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue[800], // Biru gelap untuk teks
+                                color:
+                                    Colors.blue[800], // Biru gelap untuk teks
                               ),
                             ),
                             SizedBox(height: 8),
@@ -167,7 +168,8 @@ class DoctorDetailScreen extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ),
@@ -179,7 +181,8 @@ class DoctorDetailScreen extends StatelessWidget {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ),
@@ -191,7 +194,8 @@ class DoctorDetailScreen extends StatelessWidget {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ),

@@ -1,40 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/chat_provider.dart';
 
-class ChatScreen extends StatefulWidget {
-  @override
-  _ChatScreenState createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  final List<String> messages = [
-    'Halo Dokter!',
-    'Halo, ada yang bisa saya bantu?',
-    'Saya ingin konsultasi tentang demam anak saya.',
-    'Baik, sejak kapan demamnya?',
-  ];
-
+class ChatScreen extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatProvider>(context);
+    final messages = chatProvider.messages;
+
     return Scaffold(
       backgroundColor: Color(0xFFF0F2F5),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.person, color: Colors.black),
           onPressed: () {
-            // Navigasi ke layar beranda atau layar sebelumnya
             Navigator.pushReplacementNamed(context, '/detail');
           },
         ),
         title: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: Colors.grey[300],
-              child: Icon(Icons.person, color: Colors.white),
-            ),
             SizedBox(width: 8),
             Text("dr. Contoh", style: TextStyle(color: Colors.black)),
           ],
@@ -69,8 +57,6 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-
-          // Input Chat
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             color: Colors.white,
@@ -98,11 +84,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: IconButton(
                     icon: Icon(Icons.send, color: Colors.white),
                     onPressed: () {
-                      if (_controller.text.trim().isNotEmpty) {
-                        setState(() {
-                          messages.add(_controller.text.trim());
-                          _controller.clear();
-                        });
+                      final text = _controller.text.trim();
+                      if (text.isNotEmpty) {
+                        chatProvider.sendMessage(text);
+                        _controller.clear();
                       }
                     },
                   ),
@@ -111,31 +96,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    initialRoute: '/chat',
-    routes: {
-      '/home': (context) => HomeScreen(), // Ganti dengan layar beranda Anda
-      '/chat': (context) => ChatScreen(),
-    },
-  ));
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Beranda"),
-      ),
-      body: Center(
-        child: Text("Ini adalah layar beranda"),
       ),
     );
   }

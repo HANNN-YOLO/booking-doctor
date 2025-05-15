@@ -33,18 +33,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cloud_firestore: ^4.15.3
-  firebase_core: ^2.27.0
-
-
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   provider: ^6.1.5
   font_awesome_flutter: ^10.8.0
   intl: ^0.20.2
-  flutter_time_picker_spinner: ^2.0.0
+  day_night_time_picker: ^1.1.0
+  firebase_core: ^2.28.0
+  cloud_firestore: ^4.15.8 # Untuk simpan dokter dan booking
+  firebase_database: ^10.5.7 # Untuk chat real-time
 
 dev_dependencies:
   flutter_test:
@@ -67,7 +65,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/
+    - packages/day_night_time_picker/assets/sun.png
+    - packages/day_night_time_picker/assets/moon.png
+    - assets/banner_0.jpg
+    - assets/banner_1.jpg
+    - assets/banner_2.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

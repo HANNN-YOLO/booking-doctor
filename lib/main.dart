@@ -6,20 +6,24 @@ import 'screens/doctor_detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/chat_screen.dart';
 import 'providers/search_provider.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'providers/chat_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (context) => BookingProvider()),
-    ChangeNotifierProvider(create: (context) => SearchProvider()),
-  ], child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => BookingProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => BookingProvider()),
+        ChangeNotifierProvider(create: (context) => SearchProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Aplikasi Booking Dokter',

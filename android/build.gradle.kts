@@ -27,7 +27,8 @@ tasks.register<Delete>("clean") {
 
 buildscript {
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.15' // tambahkan ini
+        classpath("com.google.gms:google-services:4.3.15") // ✅ Benar, gaya Kotlin DSL
+
     }
 }
 
