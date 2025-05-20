@@ -14,6 +14,11 @@ class HistoryScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(color: Colors.black),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/');
+            },
+            icon: Icon(Icons.arrow_back)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -35,13 +40,6 @@ class HistoryScreen extends StatelessWidget {
                 },
               ),
             ),
-            Container(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/');
-                    },
-                    child: Text("Kembali")))
           ],
         ),
       ),

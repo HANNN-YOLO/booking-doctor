@@ -13,6 +13,11 @@ class DoctorDetailScreen extends StatelessWidget {
         title: Text("Detail Dokter"),
         centerTitle: true,
         elevation: 0,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/');
+            },
+            icon: Icon(Icons.arrow_back)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -166,19 +171,6 @@ class DoctorDetailScreen extends StatelessWidget {
                   runSpacing: 10.0,
                   alignment: WrapAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                      ),
-                      child: Text("Kembali"),
-                      onPressed: () {
-                        Navigator.of(context).pushReplacementNamed('/');
-                      },
-                    ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor:

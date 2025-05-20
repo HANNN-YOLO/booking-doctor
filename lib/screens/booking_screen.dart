@@ -59,6 +59,7 @@ class BookingScreen with ChangeNotifier {
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.zero)),
                                 onPressed: () {
+                                  value.kembali();
                                   Navigator.of(context).pop();
                                 },
                                 child: Text(
