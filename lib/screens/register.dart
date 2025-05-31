@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const arah = 'register';
@@ -6,6 +8,8 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -28,7 +32,6 @@ class RegisterScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 32),
                     const Text(
@@ -40,7 +43,34 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // Email
+                    // Role Selection
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: authProvider.selectedRole,
+                          items: ['Admin', 'Pasien'].map((String role) {
+                            return DropdownMenuItem<String>(
+                              value: role,
+                              child: Text(role),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              authProvider.setRole(newValue);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Nama Lengkap
                     Container(
                       height: 50,
                       child: TextField(
@@ -59,11 +89,10 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Password
+                    // Email
                     Container(
                       height: 50,
                       child: TextField(
-                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: "Email",
                           border: OutlineInputBorder(
@@ -79,7 +108,7 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Konfirmasi Password
+                    // Password
                     Container(
                       height: 50,
                       child: TextField(

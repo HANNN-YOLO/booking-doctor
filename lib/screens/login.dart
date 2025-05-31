@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static const arah = 'login';
-
-  // Define the custom color
   static const Color mintGreen = Color(0xFFA7D676);
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -42,6 +44,33 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
+                    // Role Selection
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: authProvider.selectedRole,
+                          items: ['Admin', 'Pasien'].map((String role) {
+                            return DropdownMenuItem<String>(
+                              value: role,
+                              child: Text(role),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              authProvider.setRole(newValue);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Email
                     Container(
                       height: 50,
@@ -62,17 +91,20 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // Password
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                    Container(
+                      height: 50,
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Kata Sandi",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -82,11 +114,11 @@ class LoginScreen extends StatelessWidget {
                     // Tombol masuk
                     SizedBox(
                       width: double.infinity,
+                      height: 50,
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: mintGreen,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -103,11 +135,14 @@ class LoginScreen extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 32),
-                    const Text(
-                      "- atau masuk dengan -",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
+                    // Divider dengan teks
+                    const Center(
+                      child: Text(
+                        "- atau masuk dengan -",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),

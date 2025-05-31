@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/booking_provider.dart';
+import 'providers/search_provider.dart';
+import 'providers/chat_provider.dart';
+import 'providers/auth_provider.dart';
 import 'screens/search_screen.dart';
 import 'screens/doctor_detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/login.dart';
 import 'screens/register.dart';
-import 'providers/search_provider.dart';
-import 'providers/chat_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => BookingProvider()),
         ChangeNotifierProvider(create: (context) => SearchProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
