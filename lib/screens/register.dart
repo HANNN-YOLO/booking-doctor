@@ -180,7 +180,7 @@ class RegisterScreen extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.of(context).pop();
+                            Navigator.pushReplacementNamed(context, '/login');
                           },
                           child: const Text(
                             "masuk",
