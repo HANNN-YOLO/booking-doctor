@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  static const arah = 'login';
-
-  // Define the custom color
+class RegisterScreen extends StatelessWidget {
+  static const arah = 'register';
   static const Color mintGreen = Color(0xFFA7D676);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Register',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 16,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -32,9 +45,8 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 32),
                     const Text(
-                      "Masuk ke Akun Anda",
+                      "Buat Akun Anda",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
@@ -62,37 +74,60 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // Password
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey),
+                    Container(
+                      height: 50,
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Konfirmasi Password
+                    Container(
+                      height: 50,
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Konfirmasi Password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 24),
 
-                    // Tombol masuk
+                    // Tombol Daftar
                     SizedBox(
                       width: double.infinity,
+                      height: 50,
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: mintGreen,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         child: const Text(
-                          "Masuk",
+                          "Daftar",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -103,43 +138,52 @@ class LoginScreen extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 32),
-                    const Text(
-                      "- atau masuk dengan -",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
+                    // Divider dengan teks
+                    const Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "atau daftar dengan",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
                     ),
                     const SizedBox(height: 24),
 
                     // Social login buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        SocialButton(icon: "G"),
-                        SizedBox(width: 16),
-                        SocialButton(icon: "f"),
-                        SizedBox(width: 16),
-                        SocialButton(icon: "X"),
+                      children: [
+                        _buildSocialButton("G"),
+                        const SizedBox(width: 16),
+                        _buildSocialButton("f"),
+                        const SizedBox(width: 16),
+                        _buildSocialButton("X"),
                       ],
                     ),
 
                     const SizedBox(height: 32),
-                    // Register link
+                    // Login link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Belum punya akun? ",
+                          "sudah punya akun? ",
                           style: TextStyle(fontSize: 14),
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacementNamed(
-                                context, '/register');
+                            Navigator.of(context).pop();
                           },
                           child: const Text(
-                            "buat akun",
+                            "masuk",
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: 14,
@@ -157,15 +201,8 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class SocialButton extends StatelessWidget {
-  final String icon;
-
-  const SocialButton({super.key, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSocialButton(String icon) {
     return Container(
       width: 44,
       height: 44,
