@@ -5,6 +5,7 @@ import 'screens/search_screen.dart';
 import 'screens/doctor_detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/chat_screen.dart';
+import 'screens/login.dart';
 import 'providers/search_provider.dart';
 import 'providers/chat_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,8 +29,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Aplikasi Booking Dokter',
         theme: ThemeData(primarySwatch: Colors.blue),
-        initialRoute: '/',
+        initialRoute: '/login',
         routes: {
+          '/login': (context) => LoginScreen(),
           '/': (context) => SearchScreen(),
           '/detail': (context) => DoctorDetailScreen(),
           '/history': (context) => HistoryScreen(),
