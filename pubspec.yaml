@@ -73,6 +73,7 @@ flutter:
     - assets/banner_2.jpg
     - assets/logo.jpg
     - assets/Webp.net-resizeimage.png
+    - assets/logo-removebg-preview.png
 
 flutter_native_splash:
   color: "#7AC143" # hijau seperti di gambar
