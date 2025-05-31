@@ -8,21 +8,6 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Register',
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 16,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -43,8 +28,9 @@ class RegisterScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 32),
                     const Text(
                       "Buat Akun Anda",
                       style: TextStyle(
@@ -59,7 +45,7 @@ class RegisterScreen extends StatelessWidget {
                       height: 50,
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: "Email",
+                          hintText: "Nama Lengkap",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(color: Colors.grey),
@@ -79,7 +65,7 @@ class RegisterScreen extends StatelessWidget {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: "Password",
+                          hintText: "Email",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(color: Colors.grey),
@@ -99,7 +85,7 @@ class RegisterScreen extends StatelessWidget {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: "Konfirmasi Password",
+                          hintText: "Kata Sandi",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(color: Colors.grey),
@@ -139,33 +125,26 @@ class RegisterScreen extends StatelessWidget {
 
                     const SizedBox(height: 32),
                     // Divider dengan teks
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            "atau daftar dengan",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
+                    const Center(
+                      child: Text(
+                        "- atau daftar dengan -",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
                         ),
-                        Expanded(child: Divider()),
-                      ],
+                      ),
                     ),
                     const SizedBox(height: 24),
 
                     // Social login buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildSocialButton("G"),
-                        const SizedBox(width: 16),
-                        _buildSocialButton("f"),
-                        const SizedBox(width: 16),
-                        _buildSocialButton("X"),
+                      children: const [
+                        SocialButton(icon: "G"),
+                        SizedBox(width: 16),
+                        SocialButton(icon: "f"),
+                        SizedBox(width: 16),
+                        SocialButton(icon: "X"),
                       ],
                     ),
 
@@ -175,7 +154,7 @@ class RegisterScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "sudah punya akun? ",
+                          "Sudah punya akun? ",
                           style: TextStyle(fontSize: 14),
                         ),
                         GestureDetector(
@@ -183,7 +162,7 @@ class RegisterScreen extends StatelessWidget {
                             Navigator.pushReplacementNamed(context, '/login');
                           },
                           child: const Text(
-                            "masuk",
+                            "Masuk",
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: 14,
@@ -201,8 +180,15 @@ class RegisterScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildSocialButton(String icon) {
+class SocialButton extends StatelessWidget {
+  final String icon;
+
+  const SocialButton({super.key, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 44,
       height: 44,

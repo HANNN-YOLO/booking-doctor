@@ -4,6 +4,8 @@ class Daftar {
   String? nama;
   String? email;
   String? password;
+  String? role;
+  String? nohp;
   DateTime? tgllahir;
   String? asal;
   String? alamat;
@@ -14,6 +16,8 @@ class Daftar {
       this.nama,
       this.email,
       this.password,
+      this.role,
+      this.nohp,
       this.tgllahir,
       this.asal,
       this.alamat});
@@ -25,6 +29,7 @@ class Daftar {
       'nama': nama,
       'email': email,
       'password': password,
+      'role': role,
       'tgllahir': tgllahir?.toIso8601String(),
       'asal': asal,
       'alamat': alamat
