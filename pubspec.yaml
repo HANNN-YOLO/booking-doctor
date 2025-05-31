@@ -40,6 +40,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   intl: ^0.20.2
   day_night_time_picker: ^1.1.0
+  flutter_native_splash: ^2.3.10 # versi bisa cek di pub.dev
   firebase_core: ^2.28.0
   cloud_firestore: ^4.15.8 # Untuk simpan dokter dan booking
   firebase_database: ^10.5.7 # Untuk chat real-time
@@ -70,6 +71,15 @@ flutter:
     - assets/banner_0.jpg
     - assets/banner_1.jpg
     - assets/banner_2.jpg
+    - assets/logo.jpg
+    - assets/Webp.net-resizeimage.png
+
+flutter_native_splash:
+  color: "#7AC143" # hijau seperti di gambar
+  image: assets/Webp.net-resizeimage.png
+  android_gravity: center
+  ios_content_mode: center
+  fullscreen: true
 
   # To add assets to your application, add an assets section, like this:
   # assets:
