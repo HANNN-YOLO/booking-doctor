@@ -1,4 +1,5 @@
 class Doctor {
+  String kunci;
   final int id_doctor;
   final String name;
   final String specialty;
@@ -10,6 +11,7 @@ class Doctor {
   final String imageUrl;
 
   Doctor({
+    required this.kunci,
     required this.id_doctor,
     required this.name,
     required this.specialty,
@@ -23,7 +25,8 @@ class Doctor {
 
   factory Doctor.fromMap(Map<String, dynamic> data, String documentId) {
     return Doctor(
-      id_doctor: data['id_doctor'] ?? 0, 
+      kunci: data['kunci'],
+      id_doctor: data['id_doctor'] ?? 0,
       name: data['name'] ?? '',
       specialty: data['specialty'] ?? '',
       experience: data['experience'] ?? '',
@@ -37,6 +40,7 @@ class Doctor {
 
   Map<String, dynamic> toMap() {
     return {
+      'kunci': kunci,
       'name': name,
       'specialty': specialty,
       'experience': experience,
