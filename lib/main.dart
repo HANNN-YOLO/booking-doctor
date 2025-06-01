@@ -11,6 +11,8 @@ import 'screens/chat_screen.dart';
 import 'screens/login.dart';
 import 'screens/register.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'providers/profile_provider.dart';
+import 'screens/kekuatan_admin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => SearchProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -36,6 +39,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
+          '/kekuatan_admin': (context) => kekuatan_admin(),
           '/': (context) => SearchScreen(),
           '/detail': (context) => DoctorDetailScreen(),
           '/history': (context) => HistoryScreen(),

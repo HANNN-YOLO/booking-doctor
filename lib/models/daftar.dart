@@ -5,7 +5,7 @@ class Daftar {
   String? email;
   String? password;
   String? role;
-  String? nohp;
+  int? nohp;
   DateTime? tgllahir;
   String? asal;
   String? alamat;
