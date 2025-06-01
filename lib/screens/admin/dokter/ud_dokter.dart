@@ -1,9 +1,18 @@
+import 'package:booking_doctor/models/doctor.dart';
+import 'package:booking_doctor/providers/dokter_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UdDokter extends StatelessWidget {
   static const arah = 'updatedelete_dokter';
+
+  final TextEditingController name = TextEditingController();
+  final TextEditingController posisition = TextEditingController();
+  final TextEditingController imageurl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<DokterProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF96D165),
@@ -18,9 +27,203 @@ class UdDokter extends StatelessWidget {
             },
             icon: Icon(Icons.add),
             color: Colors.white,
-          )
+          ),
+          // IconButton(
+          //   onPressed: () {
+          //     data.read(context);
+          //   },
+          //   icon: Icon(Icons.book),
+          //   color: Colors.white,
+          // )
         ],
       ),
+      body: (data.dumydata.isEmpty)
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Datanya masih kosong",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.cyan,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('/inputan');
+                    },
+                    child: Text(
+                      "Buat Data",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Container(
+              child: Consumer<DokterProvider>(
+                builder: (context, value, child) => ListView.builder(
+                  itemCount: value.dumydata.length,
+                  itemBuilder: (context, index) => ListTile(
+                    title: Text(data.dumydata[index].name!),
+                    onTap: () => Navigator.of(context).pushNamed(
+                      '/detail',
+                      arguments: value.dumydata[index].kunci,
+                    ),
+                    leading: CircleAvatar(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              data.dumydata[index].imageUrl!,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    subtitle: Text(data.dumydata[index].specialty!),
+                    trailing: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              data.delete(context, value.dumydata[index].kunci);
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              // name.text = "${data.dumydata[index].nama}";
+                              // posisition.text =
+                              //     "${data.dumydata[index].posisi}";
+                              // imageurl.text = "${data.dumydata[index].image}";
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  content: Container(
+                                    height: 300,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text("Perubahan"),
+                                        TextField(
+                                          keyboardType: TextInputType.name,
+                                          textCapitalization:
+                                              TextCapitalization.words,
+                                          controller: name,
+                                          decoration: InputDecoration(
+                                            hintText: "Perubahan Nama",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        TextField(
+                                          keyboardType: TextInputType.name,
+                                          controller: posisition,
+                                          decoration: InputDecoration(
+                                            hintText: "Perunahan Posisi",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        TextField(
+                                          controller: imageurl,
+                                          textInputAction: TextInputAction.done,
+                                          onEditingComplete: () {},
+                                          decoration: InputDecoration(
+                                            hintText: "Perubahan Gambar",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.zero,
+                                                  ),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                                child: Text(
+                                                  "Back",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.cyan,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.zero,
+                                                  ),
+                                                ),
+                                                onPressed: () {},
+                                                child: Text(
+                                                  "Update",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.update,
+                              color: Colors.cyan,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

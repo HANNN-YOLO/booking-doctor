@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Doctor {
   String kunci;
   final int id_doctor;
@@ -6,8 +8,8 @@ class Doctor {
   final String experience;
   final String hospital;
   final String education;
-  final String availableDay;
-  final String availableTime;
+  // final String availableDay;
+  // final String availableTime;
   final String imageUrl;
   final DateTime createdAt;
   final DateTime updateAt;
@@ -20,8 +22,8 @@ class Doctor {
     required this.experience,
     required this.hospital,
     required this.education,
-    required this.availableDay,
-    required this.availableTime,
+    // required this.availableDay,
+    // required this.availableTime,
     required this.imageUrl,
     required this.createdAt,
     required this.updateAt,
@@ -29,18 +31,18 @@ class Doctor {
 
   factory Doctor.fromMap(Map<String, dynamic> data, String documentId) {
     return Doctor(
-      kunci: data['kunci'],
+      kunci: documentId,
       id_doctor: data['id_doctor'] ?? 0,
       name: data['name'] ?? '',
       specialty: data['specialty'] ?? '',
       experience: data['experience'] ?? '',
       hospital: data['hospital'] ?? '',
       education: data['education'] ?? '',
-      availableDay: data['availableDay'] ?? '',
-      availableTime: data['availableTime'] ?? '',
+      // availableDay: data['availableDay'] ?? '',
+      // availableTime: data['availableTime'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
-      createdAt: data['createdAt'] ?? '',
-      updateAt: data['updateAt'],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updateAt: (data['updateAt'] as Timestamp).toDate(),
     );
   }
 
@@ -52,8 +54,8 @@ class Doctor {
       'experience': experience,
       'hospital': hospital,
       'education': education,
-      'availableDay': availableDay,
-      'availableTime': availableTime,
+      // 'availableDay': availableDay,
+      // 'availableTime': availableTime,
       'imageUrl': imageUrl,
       'createdAt': createdAt,
       'updateAt': updateAt
