@@ -9,6 +9,8 @@ class Doctor {
   final String availableDay;
   final String availableTime;
   final String imageUrl;
+  final DateTime createdAt;
+  final DateTime updateAt;
 
   Doctor({
     required this.kunci,
@@ -21,6 +23,8 @@ class Doctor {
     required this.availableDay,
     required this.availableTime,
     required this.imageUrl,
+    required this.createdAt,
+    required this.updateAt,
   });
 
   factory Doctor.fromMap(Map<String, dynamic> data, String documentId) {
@@ -35,6 +39,8 @@ class Doctor {
       availableDay: data['availableDay'] ?? '',
       availableTime: data['availableTime'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
+      createdAt: data['createdAt'] ?? '',
+      updateAt: data['updateAt'],
     );
   }
 
@@ -49,6 +55,8 @@ class Doctor {
       'availableDay': availableDay,
       'availableTime': availableTime,
       'imageUrl': imageUrl,
+      'createdAt': createdAt,
+      'updateAt': updateAt
     };
   }
 }

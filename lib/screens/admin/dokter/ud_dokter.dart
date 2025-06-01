@@ -11,6 +11,15 @@ class UdDokter extends StatelessWidget {
           "List Dokter",
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/create_dokter');
+            },
+            icon: Icon(Icons.add),
+            color: Colors.white,
+          )
+        ],
       ),
     );
   }

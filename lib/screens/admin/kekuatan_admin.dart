@@ -59,6 +59,8 @@ class kekuatan_admin extends StatelessWidget {
                   ListTile(
                     title: Text("Dokter"),
                     leading: CircleAvatar(),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed('/updatedelete_dokter'),
                   ),
                   ListTile(
                     title: Text("Persetujuan"),
