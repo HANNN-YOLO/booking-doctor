@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../models/daftar.dart';
+import '../../providers/auth_provider.dart';
 
-class RegisterScreen extends StatelessWidget {
-  static const arah = 'register';
+class LoginScreen extends StatelessWidget {
+  static const arah = 'login';
   static const Color mintGreen = Color(0xFFA7D676);
 
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -40,63 +38,23 @@ class RegisterScreen extends StatelessWidget {
                       children: [
                         const SizedBox(height: 32),
                         const Text(
-                          "Buat Akun Anda",
+                          "Selamat Datang Kembali!",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Silakan masuk ke akun Anda",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
                         const SizedBox(height: 32),
 
-                        // Role Selection
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: authProvider.selectedRole,
-                              items: ['Admin', 'Pasien'].map((String role) {
-                                return DropdownMenuItem<String>(
-                                  value: role,
-                                  child: Text(role),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                if (newValue != null) {
-                                  authProvider.setRole(newValue);
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Nama Lengkap
-                        Container(
-                          height: 50,
-                          child: TextField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              hintText: "Nama Lengkap",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    const BorderSide(color: Colors.grey),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Email
+                        // Email field
                         Container(
                           height: 50,
                           child: TextField(
@@ -117,7 +75,7 @@ class RegisterScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // Password
+                        // Password field
                         Container(
                           height: 50,
                           child: TextField(
@@ -140,7 +98,7 @@ class RegisterScreen extends StatelessWidget {
 
                         const SizedBox(height: 24),
 
-                        // Tombol Daftar
+                        // Login button
                         SizedBox(
                           width: double.infinity,
                           height: 50,
@@ -148,28 +106,21 @@ class RegisterScreen extends StatelessWidget {
                             onPressed: authProvider.isLoading
                                 ? null
                                 : () async {
-                                    if (_nameController.text.isEmpty ||
-                                        _emailController.text.isEmpty ||
+                                    if (_emailController.text.isEmpty ||
                                         _passwordController.text.isEmpty) {
                                       authProvider.pemberitahuanError(
-                                          'Semua field harus diisi', context);
+                                          'Email dan password harus diisi',
+                                          context);
                                       return;
                                     }
 
-                                    final daftar = Daftar(
-                                      nama: _nameController.text,
-                                      email: _emailController.text,
-                                      password: _passwordController.text,
-                                      role: authProvider.selectedRole,
+                                    final success = await authProvider.login(
+                                      _emailController.text,
+                                      _passwordController.text,
+                                      context,
                                     );
 
-                                    final success = await authProvider.register(
-                                        daftar, context);
-
-                                    if (success) {
-                                      Navigator.pushReplacementNamed(
-                                          context, '/login');
-                                    }
+                                    // Navigasi akan ditangani oleh AuthProvider
                                   },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: mintGreen,
@@ -181,7 +132,7 @@ class RegisterScreen extends StatelessWidget {
                                 ? const CircularProgressIndicator(
                                     color: Colors.white)
                                 : const Text(
-                                    "Daftar",
+                                    "Masuk",
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.white,
@@ -195,7 +146,7 @@ class RegisterScreen extends StatelessWidget {
                         // Divider dengan teks
                         const Center(
                           child: Text(
-                            "- atau daftar dengan -",
+                            "- atau masuk dengan -",
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -217,21 +168,21 @@ class RegisterScreen extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 32),
-                        // Login link
+                        // Register link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              "Sudah punya akun? ",
+                              "Belum punya akun? ",
                               style: TextStyle(fontSize: 14),
                             ),
                             GestureDetector(
                               onTap: () {
                                 Navigator.pushReplacementNamed(
-                                    context, '/login');
+                                    context, '/register');
                               },
                               child: const Text(
-                                "Masuk",
+                                "Daftar",
                                 style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 14,

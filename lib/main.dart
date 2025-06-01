@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+// Providers
 import 'providers/booking_provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/auth_provider.dart';
-import 'screens/search_screen.dart';
-import 'screens/doctor_detail_screen.dart';
-import 'screens/history_screen.dart';
-import 'screens/chat_screen.dart';
-import 'screens/login.dart';
-import 'screens/register.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'providers/profile_provider.dart';
+
+// Main Screens
+import 'screens/main/search_screen.dart';
+import 'screens/main/doctor_detail_screen.dart';
+import 'screens/main/history_screen.dart';
+import 'screens/chat_screen.dart';
+
+// Auth Screens
+import 'screens/auth/login.dart';
+import 'screens/auth/register.dart';
+
+// Admin Screens
 import 'screens/kekuatan_admin.dart';
-import '/screens/create_dokter.dart';
-import '/screens/history_admin.dart';
-import '/screens/persetujuan.dart';
-import '/screens/read_dokter.dart';
-import '/screens/read_pasien.dart';
-import '/screens/ud_dokter.dart';
-import '/screens/ud_pasien.dart';
+import 'screens/admin/dokter/create_dokter.dart';
+import 'screens/admin/dokter/read_dokter.dart';
+import 'screens/admin/dokter/ud_dokter.dart';
+import 'screens/admin/pasien/read_pasien.dart';
+import 'screens/admin/pasien/ud_pasien.dart';
+import 'screens/admin/history_admin.dart';
+import 'screens/admin/persetujuan.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

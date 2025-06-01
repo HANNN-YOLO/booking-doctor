@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/booking_tile.dart';
+import '../../widgets/booking_tile.dart';
 
 class HistoryScreen extends StatelessWidget {
   @override

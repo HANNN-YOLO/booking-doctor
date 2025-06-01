@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/screens/booking_screen.dart';
+import './booking_screen.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   const DoctorDetailScreen({super.key});

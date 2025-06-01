@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/search_provider.dart';
-import '../widgets/doctor_card.dart';
+import '../../providers/search_provider.dart';
+import '../../widgets/doctor_card.dart';
 
 class SearchScreen extends StatelessWidget {
   @override
