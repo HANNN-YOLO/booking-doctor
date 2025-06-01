@@ -13,6 +13,13 @@ import 'screens/register.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'providers/profile_provider.dart';
 import 'screens/kekuatan_admin.dart';
+import '/screens/create_dokter.dart';
+import '/screens/history_admin.dart';
+import '/screens/persetujuan.dart';
+import '/screens/read_dokter.dart';
+import '/screens/read_pasien.dart';
+import '/screens/ud_dokter.dart';
+import '/screens/ud_pasien.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,11 +46,18 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
-          '/kekuatan_admin': (context) => kekuatan_admin(),
           '/': (context) => SearchScreen(),
           '/detail': (context) => DoctorDetailScreen(),
           '/history': (context) => HistoryScreen(),
           '/chat': (context) => ChatScreen(),
+          '/kekuatan_admin': (context) => kekuatan_admin(),
+          '/updatedelete_dokter': (context) => UdDokter(),
+          '/read_dokter': (context) => ReadDokter(),
+          '/create_dokter': (context) => CreateDokter(),
+          '/updatedelete_pasien': (context) => UdPasien(),
+          '/read_pasien': (context) => ReadPasien(),
+          '/persetujuan': (context) => Persetujuan(),
+          '/history_admin': (context) => HistoryAdmin(),
         },
       ),
     );
