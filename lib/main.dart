@@ -13,14 +13,14 @@ import 'providers/profile_provider.dart';
 import 'screens/main/search_screen.dart';
 import 'screens/main/doctor_detail_screen.dart';
 import 'screens/main/history_screen.dart';
-import 'screens/chat_screen.dart';
+import 'screens/main/chat_screen.dart';
 
 // Auth Screens
 import 'screens/auth/login.dart';
 import 'screens/auth/register.dart';
 
 // Admin Screens
-import 'screens/kekuatan_admin.dart';
+import 'screens/admin/kekuatan_admin.dart';
 import 'screens/admin/dokter/create_dokter.dart';
 import 'screens/admin/dokter/read_dokter.dart';
 import 'screens/admin/dokter/ud_dokter.dart';
