@@ -11,6 +11,72 @@ class kekuatan_admin extends StatelessWidget {
           "Kekuatan Admin",
           style: TextStyle(color: Colors.white),
         ),
+        leading: Container(
+          decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              image: DecorationImage(
+                  image: AssetImage('assets/logo-removebg-preview.png'),
+                  fit: BoxFit.cover)),
+        ),
+        actions: [
+          Builder(
+              builder: (context) => IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                  )))
+        ],
+      ),
+      drawer: Drawer(
+        width: 200,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 35),
+              child:
+                  ListTile(title: Text("Profil Saya"), leading: CircleAvatar()),
+            ),
+            Container(
+              height: 650,
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: Text("Pasien"),
+                    leading: CircleAvatar(),
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //     image: DecorationImage(
+                    //       image: image,
+                    //       fit: BoxFit.cover
+                    //       )
+                    //   ),
+                    // ),
+                  ),
+                  ListTile(
+                    title: Text("Dokter"),
+                    leading: CircleAvatar(),
+                  ),
+                  ListTile(
+                    title: Text("Persetujuan"),
+                    leading: CircleAvatar(),
+                  ),
+                  ListTile(
+                    title: Text("History"),
+                    leading: CircleAvatar(),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 35),
+              child: ListTile(title: Text("Log Out"), leading: CircleAvatar()),
+            ),
+          ],
+        ),
       ),
     );
   }
