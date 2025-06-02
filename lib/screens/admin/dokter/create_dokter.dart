@@ -145,9 +145,15 @@ class CreateDokter extends StatelessWidget {
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
-                      onPressed: () async {
-                        data.create(name.text, spesialis.text, hospital.text,
-                            brplama.text, belajar.text, imageurl.text, context);
+                      onPressed: () {
+                        data.create(
+                            name.text,
+                            spesialis.text,
+                            hospital.text,
+                            int.parse(brplama.text),
+                            belajar.text,
+                            imageurl.text,
+                            context);
                       },
                       child: Text(
                         "POST",

@@ -1,4 +1,5 @@
 import 'package:booking_doctor/models/doctor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -19,7 +20,7 @@ class DokterProvider with ChangeNotifier {
       String name,
       String specialty,
       String hospital,
-      String experience,
+      int experience,
       String education,
       // String availableDay,
       // String availableTime,
@@ -35,6 +36,7 @@ class DokterProvider with ChangeNotifier {
       'kunci': kunci,
       'id': id_otomatis,
       'name': name,
+      'specialty': specialty,
       'hospital': hospital,
       'experience': experience,
       'education': education,
@@ -47,6 +49,7 @@ class DokterProvider with ChangeNotifier {
 
     if (Doctor.isNotEmpty) {
       await dokumentasi.set(Doctor);
+      await read(context);
       pemberitahuan(context, "Sudah di Tambahkan");
     } else {
       pemberitahuan(context, "Gagal di tambahkan");
@@ -55,19 +58,7 @@ class DokterProvider with ChangeNotifier {
     Navigator.of(context).pop();
   }
 
-  void delete(BuildContext context, String kunci) async {
-    final snapshot = await _collection.doc(kunci).get();
-
-    final data = {};
-    if (data.isEmpty) {
-      pemberitahuan(context, "Berhasil di Hapus");
-    } else {
-      pemberitahuan(context, "Gagal di Hapus");
-    }
-    notifyListeners();
-  }
-
-  void read(BuildContext context) async {
+  Future<void> read(BuildContext context) async {
     final tembakan =
         await FirebaseFirestore.instance.collection('doctor').get();
 
@@ -77,10 +68,43 @@ class DokterProvider with ChangeNotifier {
         final dat = doc.data();
         _dumydata.add(Doctor.fromMap(dat, doc.id));
       }
-      pemberitahuan(context, "Berhasil terambil");
+      // pemberitahuan(context, "Berhasil terambil");
     } else {
       pemberitahuan(context, "Gagal terambil");
     }
+    notifyListeners();
+  }
+
+  void delete(BuildContext context, String kunci) async {
+    await _collection.doc(kunci).delete();
+    await read(context);
+    pemberitahuan(context, "Berhasil di hapus");
+    notifyListeners();
+  }
+
+  void update(
+      BuildContext context,
+      String kunci,
+      String name,
+      String specialty,
+      int experience,
+      String hospital,
+      String education,
+      String imageurl) async {
+    final terisi = DateTime.now();
+
+    await _collection.doc(kunci).update({
+      'name': name,
+      'specialty': specialty,
+      'experience': experience,
+      'hospital': hospital,
+      'education': education,
+      'imageUrl': imageurl,
+      'updateAt': Timestamp.fromDate(terisi),
+    });
+    await read(context);
+    pemberitahuan(context, "Berhasil di Edit");
+    Navigator.of(context).pop();
     notifyListeners();
   }
 

@@ -7,7 +7,10 @@ class UdDokter extends StatelessWidget {
   static const arah = 'updatedelete_dokter';
 
   final TextEditingController name = TextEditingController();
-  final TextEditingController posisition = TextEditingController();
+  final TextEditingController spesialis = TextEditingController();
+  final TextEditingController brplama = TextEditingController();
+  final TextEditingController hospital = TextEditingController();
+  final TextEditingController belajar = TextEditingController();
   final TextEditingController imageurl = TextEditingController();
 
   @override
@@ -70,7 +73,7 @@ class UdDokter extends StatelessWidget {
                 builder: (context, value, child) => ListView.builder(
                   itemCount: value.dumydata.length,
                   itemBuilder: (context, index) => ListTile(
-                    title: Text(data.dumydata[index].name!),
+                    title: Text(data.dumydata[index].name),
                     onTap: () => Navigator.of(context).pushNamed(
                       '/detail',
                       arguments: value.dumydata[index].kunci,
@@ -83,13 +86,13 @@ class UdDokter extends StatelessWidget {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: NetworkImage(
-                              data.dumydata[index].imageUrl!,
+                              data.dumydata[index].imageUrl,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    subtitle: Text(data.dumydata[index].specialty!),
+                    subtitle: Text(data.dumydata[index].specialty),
                     trailing: Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -106,15 +109,21 @@ class UdDokter extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () {
-                              // name.text = "${data.dumydata[index].nama}";
-                              // posisition.text =
-                              //     "${data.dumydata[index].posisi}";
-                              // imageurl.text = "${data.dumydata[index].image}";
+                              name.text = "${data.dumydata[index].name}";
+                              spesialis.text =
+                                  "${data.dumydata[index].specialty}";
+                              brplama.text =
+                                  "${data.dumydata[index].experience}";
+                              hospital.text =
+                                  "${data.dumydata[index].hospital}";
+                              belajar.text = "${data.dumydata[index].hospital}";
+                              imageurl.text =
+                                  "${data.dumydata[index].imageUrl}";
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   content: Container(
-                                    height: 300,
+                                    height: 500,
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
@@ -137,9 +146,48 @@ class UdDokter extends StatelessWidget {
                                         ),
                                         TextField(
                                           keyboardType: TextInputType.name,
-                                          controller: posisition,
+                                          controller: spesialis,
                                           decoration: InputDecoration(
-                                            hintText: "Perunahan Posisi",
+                                            hintText: "Perunahan Spesialis",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        TextField(
+                                          keyboardType: TextInputType.name,
+                                          controller: brplama,
+                                          decoration: InputDecoration(
+                                            hintText: "Perunahan berapa lama",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        TextField(
+                                          keyboardType: TextInputType.name,
+                                          controller: hospital,
+                                          decoration: InputDecoration(
+                                            hintText: "Perunahan Rumah Sakit",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        TextField(
+                                          keyboardType: TextInputType.name,
+                                          controller: belajar,
+                                          decoration: InputDecoration(
+                                            hintText: "Perunahan Studi Akhir",
                                             hintStyle: TextStyle(
                                               color: Colors.grey,
                                             ),
@@ -195,7 +243,18 @@ class UdDokter extends StatelessWidget {
                                                         BorderRadius.zero,
                                                   ),
                                                 ),
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  data.update(
+                                                      context,
+                                                      data.dumydata[index]
+                                                          .kunci,
+                                                      name.text,
+                                                      spesialis.text,
+                                                      int.parse(brplama.text),
+                                                      hospital.text,
+                                                      belajar.text,
+                                                      imageurl.text);
+                                                },
                                                 child: Text(
                                                   "Update",
                                                   style: TextStyle(

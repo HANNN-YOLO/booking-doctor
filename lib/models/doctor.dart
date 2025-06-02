@@ -5,7 +5,7 @@ class Doctor {
   final int id_doctor;
   final String name;
   final String specialty;
-  final String experience;
+  final int experience;
   final String hospital;
   final String education;
   // final String availableDay;
@@ -32,10 +32,14 @@ class Doctor {
   factory Doctor.fromMap(Map<String, dynamic> data, String documentId) {
     return Doctor(
       kunci: documentId,
-      id_doctor: data['id_doctor'] ?? 0,
+      id_doctor: data['id_doctor'] is int
+          ? data['id_doctor']
+          : int.tryParse(data['id_doctor'].toString()) ?? 0,
       name: data['name'] ?? '',
       specialty: data['specialty'] ?? '',
-      experience: data['experience'] ?? '',
+      experience: data['experience'] is int
+          ? data['experience']
+          : int.tryParse(data['experience'].toString()) ?? 0,
       hospital: data['hospital'] ?? '',
       education: data['education'] ?? '',
       // availableDay: data['availableDay'] ?? '',
