@@ -75,7 +75,7 @@ class UdDokter extends StatelessWidget {
                   itemBuilder: (context, index) => ListTile(
                     title: Text(data.dumydata[index].name),
                     onTap: () => Navigator.of(context).pushNamed(
-                      '/detail',
+                      '/read_dokter',
                       arguments: value.dumydata[index].kunci,
                     ),
                     leading: CircleAvatar(

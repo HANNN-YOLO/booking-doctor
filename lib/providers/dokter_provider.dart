@@ -15,6 +15,9 @@ class DokterProvider with ChangeNotifier {
 
   final _collection = FirebaseFirestore.instance.collection('doctor');
 
+  String? _pilihan_Dokter;
+  String get pilihanSpesialis => _pilihan_Dokter ?? 'Semua';
+
   void create(
       // String kunci,
       String name,
@@ -113,6 +116,37 @@ class DokterProvider with ChangeNotifier {
       content: Text(keluhkesah),
       duration: Duration(seconds: 2),
     ));
+  }
+
+  void read_spesialis(String spesialis, BuildContext context) async {
+    try {
+      if (_pilihan_Dokter == spesialis) {
+        // Jika spesialis yang sama diklik, reset ke semua dokter
+        _pilihan_Dokter = null;
+        final tembakan = await _collection.get();
+        _dumydata = tembakan.docs
+            .map((doc) => Doctor.fromMap(doc.data(), doc.id))
+            .toList();
+        pemberitahuan(context, "Menampilkan semua dokter");
+      } else {
+        // Pilih spesialis baru
+        final tembakan =
+            await _collection.where('specialty', isEqualTo: spesialis).get();
+        _dumydata = tembakan.docs
+            .map((doc) => Doctor.fromMap(doc.data(), doc.id))
+            .toList();
+        _pilihan_Dokter = spesialis;
+
+        if (tembakan.docs.isNotEmpty) {
+          pemberitahuan(context, "Menampilkan dokter spesialis $spesialis");
+        } else {
+          pemberitahuan(context, "Tidak ada dokter spesialis $spesialis");
+        }
+      }
+    } catch (e) {
+      pemberitahuan(context, "Terjadi kesalahan saat memuat data");
+    }
+    notifyListeners();
   }
 
   DokterProvider(BuildContext context) {

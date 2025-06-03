@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/search_provider.dart';
 import '../../widgets/doctor_card.dart';
+import '../../providers/dokter_provider.dart';
 
 class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SearchProvider>(context);
+    final isi = Provider.of<DokterProvider>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -87,31 +89,62 @@ class SearchScreen extends StatelessWidget {
                   children: [
                     // Chips
                     SizedBox(height: 16),
-                    SizedBox(
-                      height: 36,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: provider.categories.length,
-                        itemBuilder: (context, index) {
-                          final category = provider.categories[index];
-                          final isSelected =
-                              provider.selectedCategory == category;
-                          return Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: ChoiceChip(
-                              label: Text(category),
-                              selected: isSelected,
-                              selectedColor: Colors.black,
-                              onSelected: (_) =>
-                                  provider.selectCategory(category),
-                              labelStyle: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black,
-                              ),
-                              backgroundColor: Colors.grey[200],
-                            ),
-                          );
-                        },
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pilih Spesialis',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        SizedBox(
+                          height: 40,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: isi.dumydata.length,
+                            itemBuilder: (context, index) {
+                              final category = isi.dumydata[index].specialty;
+                              final isSelected =
+                                  isi.pilihanSpesialis == category;
+
+                              // Skip if specialty is already shown
+                              if (index > 0 &&
+                                  isi.dumydata
+                                      .take(index)
+                                      .any((d) => d.specialty == category)) {
+                                return Container();
+                              }
+
+                              return Padding(
+                                padding: EdgeInsets.only(right: 8),
+                                child: ChoiceChip(
+                                  label: Text(category),
+                                  selected: isSelected,
+                                  selectedColor: Colors.green[600],
+                                  onSelected: (bool selected) {
+                                    isi.read_spesialis(category, context);
+                                  },
+                                  labelStyle: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                  backgroundColor: Colors.grey[200],
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
 
                     // Promo Menarik Carousel
@@ -144,20 +177,40 @@ class SearchScreen extends StatelessWidget {
 
                     // Dokter Tersedia
                     SizedBox(height: 24),
-                    Text(
-                      'Dokter Tersedia',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Dokter Tersedia',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        if (isi.pilihanSpesialis != 'Semua')
+                          TextButton(
+                            onPressed: () {
+                              isi.read_spesialis(isi.pilihanSpesialis, context);
+                            },
+                            child: Text(
+                              'Reset Filter',
+                              style: TextStyle(
+                                color: Colors.green[600],
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                     SizedBox(height: 12),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: 3,
+                      itemCount: isi.dumydata.length,
                       itemBuilder: (context, index) {
+                        final doctor = isi.dumydata[index];
                         return DoctorCard(
-                          name: 'Dr. Contoh $index',
-                          specialty: 'Spesialis ${provider.selectedCategory}',
+                          name: doctor.name,
+                          specialty: 'Spesialis ${doctor.specialty}',
                           onTap: () => Navigator.pushReplacementNamed(
                               context, '/detail'),
                         );
