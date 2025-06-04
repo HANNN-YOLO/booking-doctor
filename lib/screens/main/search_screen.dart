@@ -212,7 +212,8 @@ class SearchScreen extends StatelessWidget {
                           name: doctor.name,
                           specialty: 'Spesialis ${doctor.specialty}',
                           onTap: () => Navigator.pushReplacementNamed(
-                              context, '/detail'),
+                              context, '/detail',
+                              arguments: isi.dumydata[index].kunci),
                         );
                       },
                     ),

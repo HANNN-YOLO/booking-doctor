@@ -1,5 +1,7 @@
+import 'package:booking_doctor/providers/dokter_provider.dart';
 import 'package:flutter/material.dart';
 import './booking_screen.dart';
+import 'package:provider/provider.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   const DoctorDetailScreen({super.key});
@@ -30,6 +32,10 @@ class DoctorDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final data = ModalRoute.of(context)?.settings.arguments as String;
+    final mydata = Provider.of<DokterProvider>(context)
+        .dumydata
+        .firstWhere((dat) => dat.kunci == data);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -75,10 +81,10 @@ class DoctorDetailScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Dr. Contoh",
+                            Text("Dr. ${mydata.name}",
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
-                            Text("Spesialis Saraf",
+                            Text("Spesialis ${mydata.specialty}",
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.grey[600])),
                             SizedBox(height: 8),
@@ -144,7 +150,9 @@ class DoctorDetailScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Dokter spesialis penyakit dalam yang berdedikasi tinggi dalam memberikan layanan kesehatan yang profesional dan empatik. Ia telah menangani ribuan pasien dengan berbagai kasus medis, khususnya di bidang metabolik dan penyakit kronis seperti diabetes dan hipertensi.",
+                      "Dr. ${mydata.name} adalah spesialis ${mydata.specialty}  yang berpraktik di ${mydata.hospital} . "
+                      "Beliau memiliki pengalaman lebih dari ${mydata.experience} tahun dan merupakan lulusan dari ${mydata.education} . "
+                      "Dr. ${mydata.name} dikenal karena dedikasinya dalam memberikan layanan kesehatan yang profesional dan empatik. Ia telah menangani ribuan pasien dengan berbagai kasus medis.",
                       textAlign: TextAlign.justify,
                       style: TextStyle(fontSize: 15),
                     ),
