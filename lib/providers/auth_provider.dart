@@ -57,8 +57,9 @@ class AuthProvider with ChangeNotifier {
     _authService.authStateChanges.listen((User? user) async {
       _user = user;
       if (user != null) {
-        // Load role when user is authenticated
-        _role = await _authService.getUserRole(user.uid);
+        // Load user profile and check role
+        final userProfile = await _authService.getUserProfile(user.uid);
+        _role = userProfile?['role'] as String?;
       } else {
         _role = null;
       }
@@ -83,12 +84,19 @@ class AuthProvider with ChangeNotifier {
       _setError(null);
       notifyListeners();
 
-      await _authService.registerWithEmailAndPassword(daftar);
+      // Menggunakan method baru dari AuthService
+      await _authService.registerUser(
+        email: daftar.email!,
+        password: daftar.password!,
+        name: daftar.nama!,
+        role: daftar.role!,
+      );
+
       pemberitahuan('Registrasi berhasil!', context);
       return true;
     } catch (e) {
-      _setError(e.toString());
-      pemberitahuanError('Registrasi gagal: ${e.toString()}', context);
+      _setError(_handleAuthError(e));
+      pemberitahuanError('Registrasi gagal: ${_handleAuthError(e)}', context);
       return false;
     } finally {
       _isLoading = false;
@@ -104,21 +112,30 @@ class AuthProvider with ChangeNotifier {
       _setError(null);
       notifyListeners();
 
-      final result =
-          await _authService.loginWithEmailAndPassword(email, password);
-      _user = result['user'] as User?;
-      _role = result['role'] as String?;
+      // Menggunakan method baru dari AuthService
+      final userCredential = await _authService.loginUser(
+        email: email,
+        password: password,
+      );
 
-      if (_user != null && _role != null) {
-        pemberitahuan('Login berhasil!', context);
-        // Navigate based on role after successful login
-        navigateBasedOnRole(context);
-        return true;
+      _user = userCredential.user;
+
+      if (_user != null) {
+        // Ambil data profil user
+        final userProfile = await _authService.getUserProfile(_user!.uid);
+        _role = userProfile?['role'] as String?;
+
+        if (_role != null) {
+          pemberitahuan('Login berhasil!', context);
+          navigateBasedOnRole(context);
+          return true;
+        }
       }
-      return false;
+
+      throw Exception('Gagal mendapatkan data user');
     } catch (e) {
-      _setError(e.toString());
-      pemberitahuanError('Login gagal: ${e.toString()}', context);
+      _setError(_handleAuthError(e));
+      pemberitahuanError('Login gagal: ${_handleAuthError(e)}', context);
       return false;
     } finally {
       _isLoading = false;
@@ -129,16 +146,15 @@ class AuthProvider with ChangeNotifier {
   // Logout
   Future<void> logout(BuildContext context) async {
     try {
-      await _authService.signOut();
+      await _authService.logout();
       _user = null;
       _role = null;
       pemberitahuan('Logout berhasil!', context);
-      // Navigate back to login screen after logout
       Navigator.pushReplacementNamed(context, '/login');
       notifyListeners();
     } catch (e) {
-      _setError('Error signing out: $e');
-      pemberitahuanError('Logout gagal: ${e.toString()}', context);
+      _setError(_handleAuthError(e));
+      pemberitahuanError('Logout gagal: ${_handleAuthError(e)}', context);
     }
   }
 
@@ -147,19 +163,25 @@ class AuthProvider with ChangeNotifier {
     if (e is FirebaseAuthException) {
       switch (e.code) {
         case 'weak-password':
-          return 'Password terlalu lemah';
+          return 'Password terlalu lemah (minimal 6 karakter)';
         case 'email-already-in-use':
           return 'Email sudah terdaftar';
         case 'invalid-email':
-          return 'Email tidak valid';
+          return 'Format email tidak valid';
         case 'user-not-found':
-          return 'User tidak ditemukan';
+          return 'Email tidak terdaftar';
         case 'wrong-password':
           return 'Password salah';
+        case 'user-disabled':
+          return 'Akun telah dinonaktifkan';
+        case 'operation-not-allowed':
+          return 'Operasi tidak diizinkan';
+        case 'too-many-requests':
+          return 'Terlalu banyak percobaan. Silakan coba lagi nanti';
         default:
           return 'Terjadi kesalahan: ${e.message}';
       }
     }
-    return 'Terjadi kesalahan yang tidak diketahui';
+    return e.toString();
   }
 }

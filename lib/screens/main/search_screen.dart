@@ -41,15 +41,24 @@ class SearchScreen extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.grey[200],
-                            child: Icon(Icons.notifications_none,
+                          IconButton(
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.grey[200],
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/notifikasi');
+                            },
+                            icon: Icon(Icons.notifications_none,
                                 color: Colors.black),
                           ),
-                          SizedBox(width: 8),
-                          CircleAvatar(
-                            backgroundColor: Colors.grey[200],
-                            child: Icon(Icons.history, color: Colors.black),
+                          IconButton(
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.grey[200],
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/history-booking');
+                            },
+                            icon: Icon(Icons.history, color: Colors.black),
                           ),
                         ],
                       ),

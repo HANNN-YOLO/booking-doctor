@@ -15,6 +15,8 @@ import 'screens/main/search_screen.dart';
 import 'screens/main/doctor_detail_screen.dart';
 import 'screens/main/history_screen.dart';
 import 'screens/main/chat_screen.dart';
+import 'screens/main/notifikasi.dart';
+import 'screens/main/history_booking.dart';
 
 // Auth Screens
 import 'screens/auth/login.dart';
@@ -59,6 +61,8 @@ class MyApp extends StatelessWidget {
           '/': (context) => SearchScreen(),
           '/detail': (context) => DoctorDetailScreen(),
           '/history': (context) => HistoryScreen(),
+          '/notifikasi': (context) => NotifikasiScreen(),
+          '/history-booking': (context) => HistoryBookingScreen(),
           '/chat': (context) => ChatScreen(),
           '/kekuatan_admin': (context) => kekuatan_admin(),
           '/updatedelete_dokter': (context) => UdDokter(),

@@ -65,10 +65,14 @@ class kekuatan_admin extends StatelessWidget {
                   ListTile(
                     title: Text("Persetujuan"),
                     leading: CircleAvatar(),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed('/persetujuan'),
                   ),
                   ListTile(
                     title: Text("History"),
                     leading: CircleAvatar(),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed('/history_admin'),
                   )
                 ],
               ),
