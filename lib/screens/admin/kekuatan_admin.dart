@@ -75,7 +75,12 @@ class kekuatan_admin extends StatelessWidget {
             ),
             Container(
               padding: EdgeInsets.only(top: 35),
-              child: ListTile(title: Text("Log Out"), leading: CircleAvatar()),
+              child: ListTile(
+                  title: Text("Log Out"),
+                  leading: CircleAvatar(),
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/login');
+                  }),
             ),
           ],
         ),

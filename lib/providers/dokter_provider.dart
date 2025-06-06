@@ -18,6 +18,37 @@ class DokterProvider with ChangeNotifier {
   String? _pilihan_Dokter;
   String get pilihanSpesialis => _pilihan_Dokter ?? 'Semua';
 
+  // Menyimpan state untuk jadwal yang dipilih
+  String? _selectedDay;
+  String? _selectedTime;
+
+  // Getter untuk jadwal yang dipilih
+  String? get selectedDay => _selectedDay;
+  String? get selectedTime => _selectedTime;
+
+  // Fungsi untuk memilih hari
+  void selectDay(String day) {
+    _selectedDay = day;
+    _selectedTime = null; // Reset waktu yang dipilih ketika hari baru dipilih
+    notifyListeners();
+  }
+
+  // Fungsi untuk memilih waktu
+  void selectTime(String time) {
+    _selectedTime = time;
+    notifyListeners();
+  }
+
+  // Fungsi untuk mendapatkan waktu yang tersedia berdasarkan hari yang dipilih
+  List<AvailableTime> getAvailableTimesForDay(String doctorId, String day) {
+    final doctor = _dumydata.firstWhere((doc) => doc.kunci == doctorId);
+    final selectedDaySchedule = doctor.availableDays.firstWhere(
+      (availableDay) => availableDay.day == day,
+      orElse: () => AvailableDay(day: day, availableTimes: []),
+    );
+    return selectedDaySchedule.availableTimes;
+  }
+
   void create(
       // String kunci,
       String name,
@@ -25,8 +56,7 @@ class DokterProvider with ChangeNotifier {
       String hospital,
       int experience,
       String education,
-      // String availableDay,
-      // String availableTime,
+      List<AvailableDay> availableDays,
       String imageurl,
       BuildContext context) async {
     final id_otomatis = DateTime.now().microsecondsSinceEpoch;
@@ -37,14 +67,13 @@ class DokterProvider with ChangeNotifier {
 
     final Doctor = {
       'kunci': kunci,
-      'id': id_otomatis,
+      'id_doctor': id_otomatis,
       'name': name,
       'specialty': specialty,
       'hospital': hospital,
       'experience': experience,
       'education': education,
-      // 'availableDay': availableDay,
-      // 'availableTime': availableTime,
+      'availableDays': availableDays.map((day) => day.toMap()).toList(),
       'imageUrl': imageurl,
       'createdAt': Timestamp.fromDate(terisi),
       'updateAt': Timestamp.fromDate(terisi),
@@ -147,6 +176,53 @@ class DokterProvider with ChangeNotifier {
       pemberitahuan(context, "Terjadi kesalahan saat memuat data");
     }
     notifyListeners();
+  }
+
+  // Fungsi untuk mengupdate jadwal dokter
+  Future<void> updateSchedule(
+    String doctorId,
+    List<AvailableDay> newSchedule,
+    BuildContext context,
+  ) async {
+    try {
+      await _collection.doc(doctorId).update({
+        'availableDays': newSchedule.map((day) => day.toMap()).toList(),
+        'updateAt': Timestamp.fromDate(DateTime.now()),
+      });
+      await read(context);
+      pemberitahuan(context, "Jadwal berhasil diperbarui");
+    } catch (e) {
+      pemberitahuan(context, "Gagal memperbarui jadwal: ${e.toString()}");
+    }
+  }
+
+  // Fungsi untuk menandai waktu sudah dibooking
+  Future<void> markTimeAsBooked(
+    String doctorId,
+    String day,
+    String time,
+    BuildContext context,
+  ) async {
+    try {
+      final doctor = _dumydata.firstWhere((doc) => doc.kunci == doctorId);
+      final updatedSchedule = doctor.availableDays.map((availableDay) {
+        if (availableDay.day == day) {
+          final updatedTimes = availableDay.availableTimes.map((availableTime) {
+            if (availableTime.time == time) {
+              return AvailableTime(time: time, isBooked: true);
+            }
+            return availableTime;
+          }).toList();
+          return AvailableDay(day: day, availableTimes: updatedTimes);
+        }
+        return availableDay;
+      }).toList();
+
+      await updateSchedule(doctorId, updatedSchedule, context);
+    } catch (e) {
+      pemberitahuan(
+          context, "Gagal menandai waktu sebagai dibooking: ${e.toString()}");
+    }
   }
 
   DokterProvider(BuildContext context) {

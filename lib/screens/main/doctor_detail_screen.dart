@@ -17,15 +17,21 @@ class DoctorDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildScheduleRow(String day, String time) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(day, style: TextStyle(fontSize: 16)),
-          Text(time, style: TextStyle(fontSize: 16)),
-        ],
+  Widget _buildScheduleItem(String time, bool isBooked) {
+    return Container(
+      margin: EdgeInsets.only(right: 8, bottom: 8),
+      child: FilterChip(
+        label: Text(time),
+        selected: false,
+        onSelected: isBooked ? null : (_) {},
+        backgroundColor: isBooked ? Colors.grey[300] : Color(0xFF96D165),
+        labelStyle: TextStyle(
+          color: isBooked ? Colors.grey[600] : Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }
@@ -74,8 +80,7 @@ class DoctorDetailScreen extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 35,
-                          backgroundImage: AssetImage(
-                              'assets/doctor_placeholder.png'), // Ganti dengan foto dokter jika ada
+                          backgroundImage: NetworkImage("${mydata.imageUrl}"),
                         ),
                         SizedBox(width: 16),
                         Column(
@@ -172,16 +177,48 @@ class DoctorDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Jam Kerja",
+                      "Jadwal Praktik",
                       style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue[800]),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[800],
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    _buildScheduleRow("Senin", "13.30"),
-                    _buildScheduleRow("Rabu", "13.30"),
-                    _buildScheduleRow("Jumat", "13.30"),
+                    SizedBox(height: 16),
+                    ...mydata.availableDays
+                        .map((day) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Hari di sebelah kiri
+                                  Container(
+                                    width: 80,
+                                    child: Text(
+                                      day.day,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  // Separator
+                                  SizedBox(width: 16),
+                                  // Jam-jam di sebelah kanan
+                                  Expanded(
+                                    child: Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: day.availableTimes
+                                          .map((time) => _buildScheduleItem(
+                                              time.time, time.isBooked))
+                                          .toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ))
+                        .toList(),
                   ],
                 ),
               ),
@@ -199,6 +236,15 @@ class DoctorDetailScreen extends StatelessWidget {
                 child: Text("Buat Janji",
                     style: TextStyle(color: Colors.white, fontSize: 16)),
                 onPressed: () {
+                  if (mydata.availableDays.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Maaf, tidak ada jadwal yang tersedia"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
                   BookingScreen().pesan_booking_screen(context);
                 },
               ),

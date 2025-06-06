@@ -2,87 +2,120 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../providers/booking_provider.dart';
 import 'package:provider/provider.dart';
+import '../../providers/dokter_provider.dart';
+import '../../models/doctor.dart';
 // import 'package:intl/intl.dart';
 // import 'package:provider/provider.dart';
 // import '../providers/booking_provider.dart';
 
-class BookingScreen with ChangeNotifier {
+class BookingScreen {
   void pesan_booking_screen(BuildContext context) {
-    // final provider = Provider.of<BookingProvider>(context, listen: false);
+    final bookingProvider =
+        Provider.of<BookingProvider>(context, listen: false);
+    final data = ModalRoute.of(context)?.settings.arguments as String;
+    final doctor = Provider.of<DokterProvider>(context, listen: false)
+        .dumydata
+        .firstWhere((dat) => dat.kunci == data);
+
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              content: Container(
-                height: 300,
-                child: Consumer<BookingProvider>(
-                  builder: (context, value, child) => Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text("Booking Docter"),
-                      TextField(
-                        keyboardType: TextInputType.datetime,
-                        readOnly: true,
-                        controller: value.initgl,
-                        onTap: () => value.tanggal(context),
-                        onSubmitted: (_) => value.tanggal(context),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.zero),
-                          hintText: "Pilih Tanggal",
-                          hintStyle: TextStyle(color: Colors.grey),
-                          prefixIcon: Icon(Icons.date_range),
-                        ),
-                      ),
-                      TextField(
-                        keyboardType: TextInputType.datetime,
-                        readOnly: true,
-                        controller: value.iniwaktu,
-                        onTap: () => value.waktu(context),
-                        onSubmitted: (_) => value.waktu(context),
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.zero,
-                            ),
-                            hintText: "Pilih Jam",
-                            hintStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: FaIcon(FontAwesomeIcons.clock))),
-                      ),
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.zero)),
-                                onPressed: () {
-                                  value.kembali();
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text(
-                                  "Kembali",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.zero),
-                                    backgroundColor: Colors.cyan),
-                                onPressed: () {},
-                                child: Text(
-                                  "Buat",
-                                  style: TextStyle(color: Colors.white),
-                                ))
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Buat Janji dengan Dr. ${doctor.name}'),
+        content: Consumer<BookingProvider>(
+          builder: (context, provider, child) => Container(
+            height: 400,
+            width: 300,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pilih Tanggal',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-              ),
-            ));
+                SizedBox(height: 8),
+                TextField(
+                  controller: provider.dateController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.zero),
+                    hintText: "Pilih Tanggal",
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () => provider.selectDate(context, doctor),
+                ),
+                SizedBox(height: 16),
+                if (provider.selectedDay != null) ...[
+                  Text(
+                    'Pilih Waktu',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: provider
+                        .getAvailableTimesForDay(doctor)
+                        .map(
+                          (time) => ChoiceChip(
+                            label: Text(time),
+                            selected: provider.selectedTime == time,
+                            onSelected: (selected) {
+                              if (selected) {
+                                provider.selectedTime = time;
+                                provider.timeController.text = time;
+                                provider.notifyListeners();
+                              }
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        provider.resetForm();
+                        Navigator.pop(context);
+                      },
+                      child: Text('Batal'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: provider.selectedDay != null &&
+                              provider.selectedTime != null
+                          ? () async {
+                              final success =
+                                  await provider.createBooking(doctor, context);
+                              if (success) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Booking berhasil dibuat! Silakan tunggu konfirmasi.'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            }
+                          : null,
+                      child: Text('Konfirmasi Booking'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF96D165),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

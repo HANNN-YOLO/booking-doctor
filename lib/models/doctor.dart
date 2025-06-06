@@ -1,5 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Model untuk menyimpan waktu yang tersedia
+class AvailableTime {
+  final String time;
+  final bool isBooked;
+
+  AvailableTime({
+    required this.time,
+    this.isBooked = false,
+  });
+
+  factory AvailableTime.fromMap(Map<String, dynamic> data) {
+    return AvailableTime(
+      time: data['time'] ?? '',
+      isBooked: data['isBooked'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'time': time,
+      'isBooked': isBooked,
+    };
+  }
+}
+
+// Model untuk menyimpan hari dan waktu yang tersedia
+class AvailableDay {
+  final String day;
+  final List<AvailableTime> availableTimes;
+
+  AvailableDay({
+    required this.day,
+    required this.availableTimes,
+  });
+
+  factory AvailableDay.fromMap(Map<String, dynamic> data) {
+    return AvailableDay(
+      day: data['day'] ?? '',
+      availableTimes: (data['availableTimes'] as List<dynamic>?)
+              ?.map((time) => AvailableTime.fromMap(time))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'day': day,
+      'availableTimes': availableTimes.map((time) => time.toMap()).toList(),
+    };
+  }
+}
+
 class Doctor {
   String kunci;
   final int id_doctor;
@@ -8,8 +61,7 @@ class Doctor {
   final int experience;
   final String hospital;
   final String education;
-  // final String availableDay;
-  // final String availableTime;
+  final List<AvailableDay> availableDays;
   final String imageUrl;
   final DateTime createdAt;
   final DateTime updateAt;
@@ -22,8 +74,7 @@ class Doctor {
     required this.experience,
     required this.hospital,
     required this.education,
-    // required this.availableDay,
-    // required this.availableTime,
+    required this.availableDays,
     required this.imageUrl,
     required this.createdAt,
     required this.updateAt,
@@ -42,8 +93,10 @@ class Doctor {
           : int.tryParse(data['experience'].toString()) ?? 0,
       hospital: data['hospital'] ?? '',
       education: data['education'] ?? '',
-      // availableDay: data['availableDay'] ?? '',
-      // availableTime: data['availableTime'] ?? '',
+      availableDays: (data['availableDays'] as List<dynamic>?)
+              ?.map((day) => AvailableDay.fromMap(day))
+              .toList() ??
+          [],
       imageUrl: data['imageUrl'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updateAt: (data['updateAt'] as Timestamp).toDate(),
@@ -53,13 +106,13 @@ class Doctor {
   Map<String, dynamic> toMap() {
     return {
       'kunci': kunci,
+      'id_doctor': id_doctor,
       'name': name,
       'specialty': specialty,
       'experience': experience,
       'hospital': hospital,
       'education': education,
-      // 'availableDay': availableDay,
-      // 'availableTime': availableTime,
+      'availableDays': availableDays.map((day) => day.toMap()).toList(),
       'imageUrl': imageUrl,
       'createdAt': createdAt,
       'updateAt': updateAt
