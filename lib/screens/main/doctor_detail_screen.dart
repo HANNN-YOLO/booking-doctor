@@ -245,7 +245,8 @@ class DoctorDetailScreen extends StatelessWidget {
                     );
                     return;
                   }
-                  BookingScreen().pesan_booking_screen(context);
+                  BookingScreen(doctorKey: mydata.kunci)
+                      .tampilkanDialog(context);
                 },
               ),
             ),

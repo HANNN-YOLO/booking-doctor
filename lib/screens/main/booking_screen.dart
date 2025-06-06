@@ -9,13 +9,16 @@ import '../../models/doctor.dart';
 // import '../providers/booking_provider.dart';
 
 class BookingScreen {
-  void pesan_booking_screen(BuildContext context) {
+  final String doctorKey;
+
+  BookingScreen({required this.doctorKey});
+
+  void tampilkanDialog(BuildContext context) {
     final bookingProvider =
         Provider.of<BookingProvider>(context, listen: false);
-    final data = ModalRoute.of(context)?.settings.arguments as String;
     final doctor = Provider.of<DokterProvider>(context, listen: false)
         .dumydata
-        .firstWhere((dat) => dat.kunci == data);
+        .firstWhere((dat) => dat.kunci == doctorKey);
 
     showDialog(
       context: context,
@@ -29,22 +32,27 @@ class BookingScreen {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Pilih Tanggal',
+                  'Pilih Hari Praktik',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
-                TextField(
-                  controller: provider.dateController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.zero),
-                    hintText: "Pilih Tanggal",
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () => provider.selectDate(context, doctor),
-                ),
-                SizedBox(height: 16),
+                ...doctor.availableDays
+                    .map(
+                      (day) => CheckboxListTile(
+                        title: Text(day.day),
+                        value: provider.selectedDay == day.day,
+                        onChanged: (bool? value) {
+                          if (value == true) {
+                            provider.selectedDay = day.day;
+                            provider.dateController.text = day.day;
+                            provider.notifyListeners();
+                          }
+                        },
+                      ),
+                    )
+                    .toList(),
                 if (provider.selectedDay != null) ...[
+                  SizedBox(height: 16),
                   Text(
                     'Pilih Waktu',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -53,21 +61,21 @@ class BookingScreen {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: provider
-                        .getAvailableTimesForDay(doctor)
-                        .map(
-                          (time) => ChoiceChip(
-                            label: Text(time),
-                            selected: provider.selectedTime == time,
-                            onSelected: (selected) {
-                              if (selected) {
-                                provider.selectedTime = time;
-                                provider.timeController.text = time;
-                                provider.notifyListeners();
-                              }
-                            },
-                          ),
-                        )
+                    children: doctor.availableDays
+                        .firstWhere((d) => d.day == provider.selectedDay)
+                        .availableTimes
+                        .where((time) => !time.isBooked)
+                        .map((time) => ChoiceChip(
+                              label: Text(time.time),
+                              selected: provider.selectedTime == time.time,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  provider.selectedTime = time.time;
+                                  provider.timeController.text = time.time;
+                                  provider.notifyListeners();
+                                }
+                              },
+                            ))
                         .toList(),
                   ),
                 ],
@@ -117,5 +125,11 @@ class BookingScreen {
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is now empty as the dialog is handled by the tampilkanDialog method
+    return Container();
   }
 }
