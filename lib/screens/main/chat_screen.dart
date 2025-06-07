@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../providers/dokter_provider.dart';
 
 class ChatScreen extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final name = ModalRoute.of(context)?.settings.arguments as String;
+    final isi = Provider.of<DokterProvider>(context)
+        .dumydata
+        .firstWhere((test) => test.name == name);
     final chatProvider = Provider.of<ChatProvider>(context);
     final messages = chatProvider.messages;
 
@@ -18,13 +23,16 @@ class ChatScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/detail');
+            Navigator.pushNamed(
+              context,
+              '/',
+            );
           },
         ),
         title: Row(
           children: [
             SizedBox(width: 8),
-            Text("dr. Contoh", style: TextStyle(color: Colors.black)),
+            Text("dr. ${isi.name}", style: TextStyle(color: Colors.black)),
           ],
         ),
         iconTheme: IconThemeData(color: Colors.black),

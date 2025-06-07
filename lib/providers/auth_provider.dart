@@ -11,6 +11,7 @@ class AuthProvider with ChangeNotifier {
   String _selectedRole = 'Pasien';
   bool _isLoading = false;
   String? _error;
+  bool _isPasswordVisible = false;
 
   // Getters
   User? get user => _user;
@@ -21,6 +22,7 @@ class AuthProvider with ChangeNotifier {
   bool get isAuthenticated => _user != null;
   bool get isAdmin => _role == 'Admin';
   bool get isPasien => _role == 'Pasien';
+  bool get isPasswordVisible => _isPasswordVisible;
 
   // Notifikasi
   void pemberitahuan(String pesan, BuildContext context) {
@@ -183,5 +185,11 @@ class AuthProvider with ChangeNotifier {
       }
     }
     return e.toString();
+  }
+
+  // Method untuk toggle password visibility
+  void togglePasswordVisibility() {
+    _isPasswordVisible = !_isPasswordVisible;
+    notifyListeners();
   }
 }

@@ -225,29 +225,52 @@ class DoctorDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 24),
             Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF96D165),
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-                child: Text("Buat Janji",
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
-                onPressed: () {
-                  if (mydata.availableDays.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("Maaf, tidak ada jadwal yang tersedia"),
-                        backgroundColor: Colors.red,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF96D165),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                    );
-                    return;
-                  }
-                  BookingScreen(doctorKey: mydata.kunci)
-                      .tampilkanDialog(context);
-                },
+                    ),
+                    child: Text("Buat Janji",
+                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                    onPressed: () {
+                      if (mydata.availableDays.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text("Maaf, tidak ada jadwal yang tersedia"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+                      BookingScreen(doctorKey: mydata.kunci)
+                          .tampilkanDialog(context);
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF96D165),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed('/chat', arguments: mydata.name);
+                    },
+                    child: Text("Chat Dokter",
+                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                ],
               ),
             ),
           ],

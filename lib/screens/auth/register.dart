@@ -122,7 +122,7 @@ class RegisterScreen extends StatelessWidget {
                           height: 50,
                           child: TextField(
                             controller: _passwordController,
-                            obscureText: true,
+                            obscureText: !authProvider.isPasswordVisible,
                             decoration: InputDecoration(
                               hintText: "Kata Sandi",
                               border: OutlineInputBorder(
@@ -133,6 +133,17 @@ class RegisterScreen extends StatelessWidget {
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
                                 vertical: 12,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  authProvider.isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  authProvider.togglePasswordVisibility();
+                                },
                               ),
                             ),
                           ),
