@@ -46,6 +46,7 @@ dependencies:
   firebase_auth: ^4.17.9
   http: ^1.2.1
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.10 # (cek versi terbaru)
 
 dev_dependencies:
   flutter_test:
@@ -77,11 +78,21 @@ flutter:
     - assets/Webp.net-resizeimage.png
     - assets/logo-removebg-preview.png
     - assets/logo.png
+    - assets/logo (1).png
+    - assets/logo-removebg-preview-1024px.png
 
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/logo.png"
+
+flutter_native_splash:
+  color: "#82c785" # warna background splash
+  image: assets/logo-removebg-preview-1024px.png # path ke logo
+  android: true
+  ios: true
+  fullscreen: true
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
