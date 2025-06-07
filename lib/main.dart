@@ -11,6 +11,7 @@ import 'providers/auth_provider.dart';
 import 'providers/profile_provider.dart';
 
 // Main Screens
+import 'loading_screen.dart';
 import 'screens/main/search_screen.dart';
 import 'screens/main/doctor_detail_screen.dart';
 import 'screens/main/history_screen.dart';
@@ -54,8 +55,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Aplikasi Booking Dokter',
         theme: ThemeData(primarySwatch: Colors.blue),
-        initialRoute: '/login',
+        initialRoute: '/loading',
         routes: {
+          '/loading': (context) => LoadingScreen(),
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
           '/': (context) => SearchScreen(),

@@ -42,6 +42,8 @@
   
   
   
+  
+  
   <style id="splash-screen-style">
     html {
       height: 100%
@@ -50,7 +52,7 @@
     body {
       margin: 0;
       min-height: 100%;
-      background-color: #7AC143;
+      background-color: #8BC34A;
           background-size: 100% 100%;
     }
 
@@ -107,6 +109,12 @@
       document.body.style.background = "transparent";
     }
   </script>
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    const serviceWorkerVersion = null;
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
 </head>
 <body>
   <picture id="splash">
@@ -120,7 +128,31 @@
   
   
   
-  <script src="flutter_bootstrap.js" async=""></script>
+  
+  <!-- Firebase Configuration -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
 
-
+  <script>
+    window.addEventListener('load', function(ev) {
+      // Download main.dart.js
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
+        }
+      });
+    });
+  </script>
 </body></html>
