@@ -44,7 +44,12 @@ class DokterProvider with ChangeNotifier {
     final doctor = _dumydata.firstWhere((doc) => doc.kunci == doctorId);
     final selectedDaySchedule = doctor.availableDays.firstWhere(
       (availableDay) => availableDay.day == day,
-      orElse: () => AvailableDay(day: day, availableTimes: []),
+      orElse: () => AvailableDay(
+        day: day,
+        availableTimes: [],
+        weekStartDate:
+            DateTime.now(), // Default ke waktu sekarang jika tidak ditemukan
+      ),
     );
     return selectedDaySchedule.availableTimes;
   }
@@ -209,11 +214,20 @@ class DokterProvider with ChangeNotifier {
         if (availableDay.day == day) {
           final updatedTimes = availableDay.availableTimes.map((availableTime) {
             if (availableTime.time == time) {
-              return AvailableTime(time: time, isBooked: true);
+              return AvailableTime(
+                time: time,
+                isBooked: true,
+                date: availableTime.date, // Pertahankan tanggal yang sudah ada
+              );
             }
             return availableTime;
           }).toList();
-          return AvailableDay(day: day, availableTimes: updatedTimes);
+          return AvailableDay(
+            day: day,
+            availableTimes: updatedTimes,
+            weekStartDate: availableDay
+                .weekStartDate, // Pertahankan weekStartDate yang sudah ada
+          );
         }
         return availableDay;
       }).toList();

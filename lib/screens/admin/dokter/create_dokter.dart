@@ -242,36 +242,79 @@ class _CreateDokterState extends State<CreateDokter> {
                         ),
                         onPressed: () {
                           // Konversi jadwal yang dipilih ke format AvailableDay
-                          List<AvailableDay> availableDays =
+                          final availableDays =
                               jadwalDipilih.entries.map((entry) {
+                            // Menghitung tanggal awal minggu (Senin)
+                            DateTime now = DateTime.now();
+                            DateTime monday =
+                                now.subtract(Duration(days: now.weekday - 1));
+
+                            // Menghitung tanggal untuk hari yang dipilih
+                            int dayIndex = hariTersedia.indexOf(entry.key);
+                            DateTime dayDate =
+                                monday.add(Duration(days: dayIndex));
+
                             return AvailableDay(
                               day: entry.key,
-                              availableTimes: entry.value
-                                  .map((time) => AvailableTime(time: time))
-                                  .toList(),
+                              weekStartDate: monday,
+                              availableTimes: entry.value.map((time) {
+                                // Parse waktu dari string ke DateTime
+                                List<String> timeParts = time.split(':');
+                                int hour = int.parse(timeParts[0]);
+                                int minute = int.parse(timeParts[1]);
+
+                                DateTime slotDate = DateTime(
+                                  dayDate.year,
+                                  dayDate.month,
+                                  dayDate.day,
+                                  hour,
+                                  minute,
+                                );
+
+                                return AvailableTime(
+                                  time: time,
+                                  date: slotDate,
+                                  isBooked: false,
+                                );
+                              }).toList(),
                             );
                           }).toList();
 
+                          // Buat objek Doctor dengan data yang diisi
+                          Doctor newDoctor = Doctor(
+                            kunci: '', // Akan diisi oleh Firestore
+                            id_doctor: DateTime.now().millisecondsSinceEpoch,
+                            name: name.text,
+                            specialty: spesialis.text,
+                            experience: int.parse(brplama.text),
+                            hospital: hospital.text,
+                            education: belajar.text,
+                            availableDays: availableDays,
+                            imageUrl: imageurl.text,
+                            createdAt: DateTime.now(),
+                            updateAt: DateTime.now(),
+                          );
+
+                          // Simpan data dokter
                           data.create(
-                            name.text,
-                            spesialis.text,
-                            hospital.text,
-                            int.parse(brplama.text),
-                            belajar.text,
+                            newDoctor.name,
+                            newDoctor.specialty,
+                            newDoctor.hospital,
+                            newDoctor.experience,
+                            newDoctor.education,
                             availableDays,
-                            imageurl.text,
+                            newDoctor.imageUrl,
                             context,
                           );
                         },
                         child: Text(
-                          "POST",
+                          "Simpan",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
               ],
             ),
           ),

@@ -2,9 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../models/booking.dart';
+import 'package:intl/intl.dart';
 
 class Persetujuan extends StatelessWidget {
   static const arah = 'persetujuan';
+
+  String _formatDate(DateTime date) {
+    // Konversi nama hari ke Indonesia
+    final Map<String, String> dayNames = {
+      'Monday': 'Senin',
+      'Tuesday': 'Selasa',
+      'Wednesday': 'Rabu',
+      'Thursday': 'Kamis',
+      'Friday': 'Jumat',
+      'Saturday': 'Sabtu',
+      'Sunday': 'Minggu',
+    };
+
+    // Format tanggal ke Bahasa Indonesia
+    final Map<String, String> monthNames = {
+      'January': 'Januari',
+      'February': 'Februari',
+      'March': 'Maret',
+      'April': 'April',
+      'May': 'Mei',
+      'June': 'Juni',
+      'July': 'Juli',
+      'August': 'Agustus',
+      'September': 'September',
+      'October': 'Oktober',
+      'November': 'November',
+      'December': 'Desember',
+    };
+
+    String dayName = dayNames[DateFormat('EEEE').format(date)] ?? '';
+    String monthName = monthNames[DateFormat('MMMM').format(date)] ?? '';
+
+    return '$dayName, ${date.day} $monthName ${date.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,13 +111,13 @@ class Persetujuan extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF96D165).withOpacity(0.2),
+                                  color: Colors.orange.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
                                   'Menunggu',
                                   style: TextStyle(
-                                    color: Color(0xFF96D165),
+                                    color: Colors.orange,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -92,8 +127,12 @@ class Persetujuan extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text('Spesialis: ${booking.specialty}'),
-                          Text('Hari: ${booking.selectedDay}'),
-                          Text('Jam: ${booking.selectedTime}'),
+                          Text(
+                            'Jadwal: ${_formatDate(booking.selectedDate)}, ${booking.selectedTime}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,

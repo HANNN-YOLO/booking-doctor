@@ -47,6 +47,7 @@ dependencies:
   http: ^1.2.1
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.3.10 # (cek versi terbaru)
+  table_calendar: ^3.0.9 # Menambahkan dependensi table_calendar
 
 dev_dependencies:
   flutter_test:

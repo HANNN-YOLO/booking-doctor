@@ -4,16 +4,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AvailableTime {
   final String time;
   final bool isBooked;
+  final DateTime date;
 
   AvailableTime({
     required this.time,
     this.isBooked = false,
+    required this.date,
   });
 
   factory AvailableTime.fromMap(Map<String, dynamic> data) {
     return AvailableTime(
       time: data['time'] ?? '',
       isBooked: data['isBooked'] ?? false,
+      date: data['date'] != null
+          ? (data['date'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -21,7 +26,16 @@ class AvailableTime {
     return {
       'time': time,
       'isBooked': isBooked,
+      'date': Timestamp.fromDate(date),
     };
+  }
+
+  bool isAvailable() {
+    return !isBooked && date.isAfter(DateTime.now());
+  }
+
+  String getDateTimeString() {
+    return '${date.day}/${date.month}/${date.year} $time';
   }
 }
 
@@ -29,10 +43,12 @@ class AvailableTime {
 class AvailableDay {
   final String day;
   final List<AvailableTime> availableTimes;
+  final DateTime weekStartDate; // Tanggal awal minggu
 
   AvailableDay({
     required this.day,
     required this.availableTimes,
+    required this.weekStartDate, // Menambahkan parameter wajib untuk tanggal awal minggu
   });
 
   factory AvailableDay.fromMap(Map<String, dynamic> data) {
@@ -42,6 +58,9 @@ class AvailableDay {
               ?.map((time) => AvailableTime.fromMap(time))
               .toList() ??
           [],
+      weekStartDate: data['weekStartDate'] != null
+          ? (data['weekStartDate'] as Timestamp).toDate()
+          : DateTime.now(), // Default ke waktu sekarang jika tidak ada
     );
   }
 
@@ -49,7 +68,17 @@ class AvailableDay {
     return {
       'day': day,
       'availableTimes': availableTimes.map((time) => time.toMap()).toList(),
+      'weekStartDate': Timestamp.fromDate(weekStartDate),
     };
+  }
+
+  // Method untuk mendapatkan jadwal yang tersedia untuk minggu tertentu
+  List<AvailableTime> getAvailableTimesForWeek(DateTime weekOf) {
+    return availableTimes.where((time) {
+      final bool sameWeek = time.date.isAfter(weekOf) &&
+          time.date.isBefore(weekOf.add(Duration(days: 7)));
+      return sameWeek && time.isAvailable();
+    }).toList();
   }
 }
 

@@ -11,6 +11,7 @@ class Booking {
   final String selectedTime; // Waktu yang dipilih
   final String status; // pending/approved/rejected
   final DateTime createdAt; // Waktu pembuatan booking
+  final DateTime selectedDate; // Tanggal yang dipilih untuk booking
   final DateTime? approvedAt; // Waktu disetujui (jika approved)
   final DateTime? rejectedAt; // Waktu ditolak (jika rejected)
   final String? rejectionReason; // Alasan penolakan (jika rejected)
@@ -26,12 +27,53 @@ class Booking {
     required this.selectedTime,
     required this.status,
     required this.createdAt,
+    required this.selectedDate,
     this.approvedAt,
     this.rejectedAt,
     this.rejectionReason,
   });
 
   factory Booking.fromMap(Map<String, dynamic> data, String documentId) {
+    // Fungsi helper untuk mengkonversi string hari ke DateTime
+    DateTime getDateFromDay(String day) {
+      final Map<String, int> dayToNumber = {
+        'Minggu': 7,
+        'Senin': 1,
+        'Selasa': 2,
+        'Rabu': 3,
+        'Kamis': 4,
+        'Jumat': 5,
+        'Sabtu': 6,
+      };
+
+      final now = DateTime.now();
+      final dayNumber = dayToNumber[day] ?? 1;
+      final currentDayNumber = now.weekday;
+
+      // Hitung selisih hari
+      int daysToAdd = dayNumber - currentDayNumber;
+      if (daysToAdd <= 0) {
+        daysToAdd += 7; // Tambah 7 hari jika hari yang dipilih sudah lewat
+      }
+
+      // Kembalikan tanggal yang sesuai
+      return DateTime(
+        now.year,
+        now.month,
+        now.day + daysToAdd,
+      );
+    }
+
+    // Ambil selectedDate dari Firestore, jika null gunakan helper function
+    DateTime bookingDate;
+    if (data['selectedDate'] != null) {
+      bookingDate = (data['selectedDate'] as Timestamp).toDate();
+    } else {
+      // Jika tidak ada selectedDate, generate dari selectedDay
+      final selectedDay = data['selectedDay'] as String? ?? 'Senin';
+      bookingDate = getDateFromDay(selectedDay);
+    }
+
     return Booking(
       kunci: documentId,
       userId: data['userId'] ?? '',
@@ -43,6 +85,7 @@ class Booking {
       selectedTime: data['selectedTime'] ?? '',
       status: data['status'] ?? 'pending',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
+      selectedDate: bookingDate,
       approvedAt: data['approvedAt'] != null
           ? (data['approvedAt'] as Timestamp).toDate()
           : null,
@@ -64,6 +107,7 @@ class Booking {
       'selectedTime': selectedTime,
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
+      'selectedDate': Timestamp.fromDate(selectedDate),
       'approvedAt': approvedAt != null ? Timestamp.fromDate(approvedAt!) : null,
       'rejectedAt': rejectedAt != null ? Timestamp.fromDate(rejectedAt!) : null,
       'rejectionReason': rejectionReason,

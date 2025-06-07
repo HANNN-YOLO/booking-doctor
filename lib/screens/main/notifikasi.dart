@@ -2,9 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../models/booking.dart';
+import 'package:intl/intl.dart';
 
 class NotifikasiScreen extends StatelessWidget {
   static const String routeName = '/notifikasi';
+
+  String _formatDate(DateTime date) {
+    // Konversi nama hari ke Indonesia
+    final Map<String, String> dayNames = {
+      'Monday': 'Senin',
+      'Tuesday': 'Selasa',
+      'Wednesday': 'Rabu',
+      'Thursday': 'Kamis',
+      'Friday': 'Jumat',
+      'Saturday': 'Sabtu',
+      'Sunday': 'Minggu',
+    };
+
+    // Format tanggal ke Bahasa Indonesia
+    final Map<String, String> monthNames = {
+      'January': 'Januari',
+      'February': 'Februari',
+      'March': 'Maret',
+      'April': 'April',
+      'May': 'Mei',
+      'June': 'Juni',
+      'July': 'Juli',
+      'August': 'Agustus',
+      'September': 'September',
+      'October': 'Oktober',
+      'November': 'November',
+      'December': 'Desember',
+    };
+
+    String dayName = dayNames[DateFormat('EEEE').format(date)] ?? '';
+    String monthName = monthNames[DateFormat('MMMM').format(date)] ?? '';
+
+    return '$dayName, ${date.day} $monthName ${date.year}';
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${_formatDate(dateTime)}, ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,21 +77,18 @@ class NotifikasiScreen extends StatelessWidget {
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
                   final booking = notifications[index];
+                  final isApproved = booking.status == 'approved';
+
                   return Card(
                     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ListTile(
-                      // leading: CircleAvatar(
-                      //   backgroundColor: Color(0xFF96D165),
-                      //   child: Icon(
-                      //     Icons.notifications_active,
-                      //     color: Colors.white,
-                      //   ),
-                      // ),
                       title: Text(
-                        'Admin telah menyetujui untuk janji TemuDokter',
+                        isApproved
+                            ? 'Admin telah menyetujui untuk janji TemuDokter'
+                            : 'Admin telah menolak janji TemuDokter',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF96D165),
+                          color: isApproved ? Color(0xFF96D165) : Colors.red,
                         ),
                       ),
                       subtitle: Column(
@@ -64,10 +100,10 @@ class NotifikasiScreen extends StatelessWidget {
                             style: TextStyle(fontSize: 14),
                           ),
                           Text(
-                            'pada ${booking.selectedDay} pukul ${booking.selectedTime}',
+                            'pada ${_formatDate(booking.selectedDate)}, ${booking.selectedTime}',
                             style: TextStyle(fontSize: 14),
                           ),
-                          if (booking.approvedAt != null)
+                          if (isApproved && booking.approvedAt != null)
                             Padding(
                               padding: EdgeInsets.only(top: 4),
                               child: Text(
@@ -78,11 +114,39 @@ class NotifikasiScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
+                          if (!isApproved)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (booking.rejectedAt != null)
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      'Ditolak pada: ${_formatDateTime(booking.rejectedAt!)}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                if (booking.rejectionReason != null)
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      'Alasan: ${booking.rejectionReason}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                         ],
                       ),
                       trailing: Icon(
-                        Icons.check_circle,
-                        color: Color(0xFF96D165),
+                        isApproved ? Icons.check_circle : Icons.cancel,
+                        color: isApproved ? Color(0xFF96D165) : Colors.red,
                       ),
                     ),
                   );
@@ -93,9 +157,5 @@ class NotifikasiScreen extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }

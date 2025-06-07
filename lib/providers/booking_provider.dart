@@ -25,12 +25,20 @@ class BookingProvider with ChangeNotifier {
     return _bookingService.getPendingBookings();
   }
 
-  // Stream untuk riwayat booking admin
+  // Stream untuk riwayat booking admin (disetujui)
   Stream<List<Booking>>? get approvedBookings {
     final user = _authService.currentUser;
     if (user == null) return Stream.value([]);
 
     return _bookingService.getApprovedBookings();
+  }
+
+  // Stream untuk riwayat booking admin (ditolak)
+  Stream<List<Booking>>? get rejectedBookings {
+    final user = _authService.currentUser;
+    if (user == null) return Stream.value([]);
+
+    return _bookingService.getRejectedBookings();
   }
 
   BookingProvider() {
@@ -76,8 +84,8 @@ class BookingProvider with ChangeNotifier {
         throw Exception('Anda harus login terlebih dahulu');
       }
 
-      if (selectedDay == null || selectedTime == null) {
-        throw Exception('Pilih hari dan waktu terlebih dahulu');
+      if (selectedDay == null || selectedTime == null || selectedDate == null) {
+        throw Exception('Pilih tanggal, hari dan waktu terlebih dahulu');
       }
 
       await _bookingService.createBooking(
@@ -85,6 +93,7 @@ class BookingProvider with ChangeNotifier {
         doctor: doctor,
         selectedDay: selectedDay!,
         selectedTime: selectedTime!,
+        selectedDate: selectedDate!,
       );
 
       resetForm();
@@ -139,6 +148,8 @@ class BookingProvider with ChangeNotifier {
     if (user == null) {
       return Stream.value([]);
     }
-    return _bookingService.getUserBookings(user.uid, 'approved');
+
+    // Menggabungkan stream approved dan rejected
+    return _bookingService.getUserNotificationsWithStatus(user.uid);
   }
 }

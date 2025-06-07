@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../models/booking.dart';
+import 'package:intl/intl.dart';
 
 class HistoryBookingScreen extends StatelessWidget {
   static const String routeName = '/history-booking';
@@ -9,7 +10,7 @@ class HistoryBookingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFF96D165),
@@ -20,6 +21,7 @@ class HistoryBookingScreen extends StatelessWidget {
           bottom: TabBar(
             indicatorColor: Colors.white,
             tabs: [
+              Tab(text: 'Menunggu'),
               Tab(text: 'Disetujui'),
               Tab(text: 'Ditolak'),
             ],
@@ -27,6 +29,7 @@ class HistoryBookingScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
+            _BookingHistoryList(status: 'pending'),
             _BookingHistoryList(status: 'approved'),
             _BookingHistoryList(status: 'rejected'),
           ],
@@ -43,6 +46,40 @@ class _BookingHistoryList extends StatelessWidget {
     Key? key,
     required this.status,
   }) : super(key: key);
+
+  String _formatDate(DateTime date) {
+    // Konversi nama hari ke Indonesia
+    final Map<String, String> dayNames = {
+      'Monday': 'Senin',
+      'Tuesday': 'Selasa',
+      'Wednesday': 'Rabu',
+      'Thursday': 'Kamis',
+      'Friday': 'Jumat',
+      'Saturday': 'Sabtu',
+      'Sunday': 'Minggu',
+    };
+
+    // Format tanggal ke Bahasa Indonesia
+    final Map<String, String> monthNames = {
+      'January': 'Januari',
+      'February': 'Februari',
+      'March': 'Maret',
+      'April': 'April',
+      'May': 'Mei',
+      'June': 'Juni',
+      'July': 'Juli',
+      'August': 'Agustus',
+      'September': 'September',
+      'October': 'Oktober',
+      'November': 'November',
+      'December': 'Desember',
+    };
+
+    String dayName = dayNames[DateFormat('EEEE').format(date)] ?? '';
+    String monthName = monthNames[DateFormat('MMMM').format(date)] ?? '';
+
+    return '$dayName, ${date.day} $monthName ${date.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +102,9 @@ class _BookingHistoryList extends StatelessWidget {
                 child: Text(
                   status == 'approved'
                       ? 'Belum ada booking yang disetujui'
-                      : 'Belum ada booking yang ditolak',
+                      : status == 'rejected'
+                          ? 'Belum ada booking yang ditolak'
+                          : 'Belum ada booking yang menunggu persetujuan',
                 ),
               );
             }
@@ -78,7 +117,7 @@ class _BookingHistoryList extends StatelessWidget {
                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Color(0xFF96D165),
+                      backgroundColor: _getStatusColor(status),
                       child: Icon(
                         Icons.medical_services,
                         color: Colors.white,
@@ -94,7 +133,12 @@ class _BookingHistoryList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Spesialis ${booking.specialty}'),
-                        Text('${booking.selectedDay}, ${booking.selectedTime}'),
+                        Text(
+                          '${_formatDate(booking.selectedDate)}, ${booking.selectedTime}',
+                          style: TextStyle(
+                            color: Colors.black87,
+                          ),
+                        ),
                         if (status == 'approved' && booking.approvedAt != null)
                           Text(
                             'Disetujui pada: ${_formatDateTime(booking.approvedAt!)}',
@@ -112,6 +156,15 @@ class _BookingHistoryList extends StatelessWidget {
                               color: Colors.red,
                             ),
                           ),
+                        if (status == 'pending')
+                          Text(
+                            'Menunggu persetujuan admin',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
                       ],
                     ),
                     trailing: Container(
@@ -120,13 +173,11 @@ class _BookingHistoryList extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: status == 'approved'
-                            ? Color(0xFF96D165)
-                            : Colors.red,
+                        color: _getStatusColor(status),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        status == 'approved' ? 'Disetujui' : 'Ditolak',
+                        _getStatusText(status),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -141,6 +192,32 @@ class _BookingHistoryList extends StatelessWidget {
         );
       },
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'approved':
+        return Color(0xFF96D165);
+      case 'rejected':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getStatusText(String status) {
+    switch (status) {
+      case 'approved':
+        return 'Disetujui';
+      case 'rejected':
+        return 'Ditolak';
+      case 'pending':
+        return 'Menunggu';
+      default:
+        return '';
+    }
   }
 
   String _formatDateTime(DateTime dateTime) {

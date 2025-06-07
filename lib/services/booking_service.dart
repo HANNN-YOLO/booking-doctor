@@ -13,6 +13,7 @@ class BookingService {
     required Doctor doctor,
     required String selectedDay,
     required String selectedTime,
+    required DateTime selectedDate,
   }) async {
     try {
       // 1. Ambil data profil user dari Realtime Database
@@ -39,6 +40,7 @@ class BookingService {
         selectedTime: selectedTime,
         status: 'pending',
         createdAt: DateTime.now(),
+        selectedDate: selectedDate,
       );
 
       // 4. Simpan booking ke Firestore
@@ -182,5 +184,34 @@ class BookingService {
           .map((doc) => Booking.fromMap(doc.data(), doc.id))
           .toList();
     });
+  }
+
+  // Mendapatkan semua booking yang ditolak (untuk admin)
+  Stream<List<Booking>> getRejectedBookings() {
+    return _firestore
+        .collection('booking')
+        .where('status', isEqualTo: 'rejected')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => Booking.fromMap(doc.data(), doc.id))
+          .toList();
+    });
+  }
+
+  // Mendapatkan notifikasi booking (approved dan rejected)
+  Stream<List<Booking>> getUserNotificationsWithStatus(String userId) {
+    return _firestore
+        .collection('booking')
+        .where('userId', isEqualTo: userId)
+        .where('status', whereIn: ['approved', 'rejected'])
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => Booking.fromMap(doc.data(), doc.id))
+              .toList();
+        });
   }
 }
