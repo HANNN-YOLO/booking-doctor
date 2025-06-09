@@ -5,6 +5,7 @@ import '../services/profile_service.dart';
 
 class ProfileProvider with ChangeNotifier {
   final ProfileService _profileService = ProfileService();
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   Map<String, dynamic>? _profileData;
   bool _isLoading = false;
@@ -43,10 +44,15 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   // Load profile data
   Future<void> loadProfile(String uid, BuildContext context) async {
     try {
-      _isLoading = true;
+      _setLoading(true);
       _setError(null);
       notifyListeners();
 
@@ -60,7 +66,7 @@ class ProfileProvider with ChangeNotifier {
       _setError(e.toString());
       pemberitahuanError('Gagal memuat profil: ${e.toString()}', context);
     } finally {
-      _isLoading = false;
+      _setLoading(false);
       notifyListeners();
     }
   }
@@ -69,7 +75,7 @@ class ProfileProvider with ChangeNotifier {
   Future<bool> createProfile(
       String uid, Daftar daftar, BuildContext context) async {
     try {
-      _isLoading = true;
+      _setLoading(true);
       _setError(null);
       notifyListeners();
 
@@ -82,7 +88,7 @@ class ProfileProvider with ChangeNotifier {
       pemberitahuanError('Gagal membuat profil: ${e.toString()}', context);
       return false;
     } finally {
-      _isLoading = false;
+      _setLoading(false);
       notifyListeners();
     }
   }
@@ -91,7 +97,7 @@ class ProfileProvider with ChangeNotifier {
   Future<bool> updateProfile(
       String uid, Map<String, dynamic> data, BuildContext context) async {
     try {
-      _isLoading = true;
+      _setLoading(true);
       _setError(null);
       notifyListeners();
 
@@ -104,7 +110,7 @@ class ProfileProvider with ChangeNotifier {
       pemberitahuanError('Gagal memperbarui profil: ${e.toString()}', context);
       return false;
     } finally {
-      _isLoading = false;
+      _setLoading(false);
       notifyListeners();
     }
   }
@@ -127,5 +133,45 @@ class ProfileProvider with ChangeNotifier {
     _isProfileComplete = false;
     _error = null;
     notifyListeners();
+  }
+
+  Future<void> updateProfileInDatabase(
+      String userId, Map<String, dynamic> updates) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      // Update profile in Realtime Database
+      await _database.child('users').child(userId).update(updates);
+
+      notifyListeners();
+    } catch (e) {
+      _setError(e.toString());
+      throw e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<Daftar?> getProfileFromDatabase(String userId) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      final snapshot = await _database.child('users').child(userId).get();
+
+      if (snapshot.exists) {
+        return Daftar.fromJson(
+          userId,
+          Map<String, dynamic>.from(snapshot.value as Map),
+        );
+      }
+      return null;
+    } catch (e) {
+      _setError(e.toString());
+      throw e.toString();
+    } finally {
+      _setLoading(false);
+    }
   }
 }
