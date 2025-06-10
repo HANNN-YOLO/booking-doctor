@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/daftar.dart';
 import '../services/auth_service.dart';
+import '../providers/profile_provider.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -127,6 +129,13 @@ class AuthProvider with ChangeNotifier {
         final userProfile = await _authService.getUserProfile(_user!.uid);
         _role = userProfile?['role'] as String?;
 
+        // Set role di ProfileProvider
+        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        if (_role != null) {
+          profileProvider.setRole(_role!);
+          await profileProvider.loadProfile(_user!.uid, context);
+        }
+
         if (_role != null) {
           pemberitahuan('Login berhasil!', context);
           navigateBasedOnRole(context);
@@ -151,6 +160,11 @@ class AuthProvider with ChangeNotifier {
       await _authService.logout();
       _user = null;
       _role = null;
+      
+      // Clear profile data
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      profileProvider.clearProfile();
+      
       pemberitahuan('Logout berhasil!', context);
       Navigator.pushReplacementNamed(context, '/login');
       notifyListeners();

@@ -11,12 +11,14 @@ class ProfileProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _isProfileComplete = false;
+  String? _role;
 
   // Getters
   Map<String, dynamic>? get profileData => _profileData;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isProfileComplete => _isProfileComplete;
+  String? get role => _role;
 
   // Notifikasi
   void pemberitahuan(String pesan, BuildContext context) {
@@ -49,6 +51,11 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setRole(String role) {
+    _role = role;
+    notifyListeners();
+  }
+
   // Load profile data
   Future<void> loadProfile(String uid, BuildContext context) async {
     try {
@@ -56,10 +63,10 @@ class ProfileProvider with ChangeNotifier {
       _setError(null);
       notifyListeners();
 
-      _profileData = await _profileService.getProfile(uid);
-      _isProfileComplete = await _profileService.isProfileComplete(uid);
-
+      _profileData = await _profileService.getProfile(uid, role: _role);
       if (_profileData != null) {
+        _role = _profileData!['role'];
+        _isProfileComplete = await _profileService.isProfileComplete(uid, role: _role);
         pemberitahuan('Data profil berhasil dimuat', context);
       }
     } catch (e) {
@@ -80,6 +87,7 @@ class ProfileProvider with ChangeNotifier {
       notifyListeners();
 
       await _profileService.createProfile(uid, daftar);
+      _role = daftar.role;
       await loadProfile(uid, context);
       pemberitahuan('Profil berhasil dibuat', context);
       return true;
@@ -101,6 +109,9 @@ class ProfileProvider with ChangeNotifier {
       _setError(null);
       notifyListeners();
 
+      if (_role != null) {
+        data['role'] = _role;
+      }
       await _profileService.updateProfile(uid, data);
       await loadProfile(uid, context);
       pemberitahuan('Profil berhasil diperbarui', context);
@@ -117,9 +128,12 @@ class ProfileProvider with ChangeNotifier {
 
   // Listen to profile changes
   void listenToProfile(String uid) {
-    _profileService.profileStream(uid).listen((DatabaseEvent event) {
+    _profileService.profileStream(uid, role: _role).listen((DatabaseEvent event) {
       if (event.snapshot.exists) {
         _profileData = Map<String, dynamic>.from(event.snapshot.value as Map);
+        if (_profileData != null) {
+          _role = _profileData!['role'];
+        }
         notifyListeners();
       }
     }, onError: (error) {
@@ -132,6 +146,7 @@ class ProfileProvider with ChangeNotifier {
     _profileData = null;
     _isProfileComplete = false;
     _error = null;
+    _role = null;
     notifyListeners();
   }
 
@@ -141,8 +156,12 @@ class ProfileProvider with ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      // Update profile in Realtime Database
-      await _database.child('users').child(userId).update(updates);
+      if (_role != null) {
+        updates['role'] = _role;
+      }
+
+      final profilePath = _role?.toLowerCase() == 'admin' ? 'admin_profiles' : 'pasien_profiles';
+      await _database.child(profilePath).child(userId).update(updates);
 
       notifyListeners();
     } catch (e) {
@@ -158,7 +177,8 @@ class ProfileProvider with ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final snapshot = await _database.child('users').child(userId).get();
+      final profilePath = _role?.toLowerCase() == 'admin' ? 'admin_profiles' : 'pasien_profiles';
+      final snapshot = await _database.child(profilePath).child(userId).get();
 
       if (snapshot.exists) {
         return Daftar.fromJson(

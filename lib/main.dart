@@ -25,6 +25,8 @@ import 'screens/auth/register.dart';
 
 // Admin Screens
 import 'screens/admin/kekuatan_admin.dart';
+import 'screens/admin/profil_admin.dart';
+import 'screens/admin/edit_admin.dart';
 import 'screens/admin/dokter/create_dokter.dart';
 import 'screens/admin/dokter/read_dokter.dart';
 import 'screens/admin/dokter/ud_dokter.dart';
@@ -67,6 +69,8 @@ class MyApp extends StatelessWidget {
           '/history-booking': (context) => HistoryBookingScreen(),
           '/chat': (context) => ChatScreen(),
           '/kekuatan_admin': (context) => kekuatan_admin(),
+          '/profil-admin': (context) => ProfilAdmin(),
+          '/edit-admin': (context) => EditAdmin(),
           '/updatedelete_dokter': (context) => UdDokter(),
           '/read_dokter': (context) => ReadDokter(),
           '/create_dokter': (context) => CreateDokter(),

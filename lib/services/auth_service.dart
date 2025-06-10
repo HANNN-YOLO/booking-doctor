@@ -11,6 +11,10 @@ class AuthService {
   // Stream untuk memantau status autentikasi
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  String _getProfilePath(String role) {
+    return role.toLowerCase() == 'admin' ? 'admin_profiles' : 'pasien_profiles';
+  }
+
   // Registrasi user baru
   Future<UserCredential> registerUser({
     required String email,
@@ -27,12 +31,14 @@ class AuthService {
 
       // 2. Simpan data profil di Realtime Database
       if (userCredential.user != null) {
-        await _database.ref(userCredential.user!.uid).set({
-          'name': name,
+        final profilePath = _getProfilePath(role);
+        await _database.ref().child(profilePath).child(userCredential.user!.uid).set({
+          'nama': name,
           'email': email,
           'role': role,
           'createdAt': DateTime.now().toIso8601String(),
           'updatedAt': DateTime.now().toIso8601String(),
+          'profile_completed': true,
         });
       }
 
@@ -65,10 +71,18 @@ class AuthService {
   // Mendapatkan data profil user
   Future<Map<String, dynamic>?> getUserProfile(String uid) async {
     try {
-      final snapshot = await _database.ref(uid).get();
-      if (snapshot.exists) {
-        return Map<String, dynamic>.from(snapshot.value as Map);
+      // Cek di admin_profiles dulu
+      final adminSnapshot = await _database.ref().child('admin_profiles').child(uid).get();
+      if (adminSnapshot.exists) {
+        return Map<String, dynamic>.from(adminSnapshot.value as Map);
       }
+
+      // Kalau tidak ada, cek di pasien_profiles
+      final patientSnapshot = await _database.ref().child('pasien_profiles').child(uid).get();
+      if (patientSnapshot.exists) {
+        return Map<String, dynamic>.from(patientSnapshot.value as Map);
+      }
+
       return null;
     } catch (e) {
       rethrow;
@@ -78,8 +92,10 @@ class AuthService {
   // Update profil user
   Future<void> updateUserProfile(String uid, Map<String, dynamic> data) async {
     try {
+      final role = data['role'] ?? 'Pasien';
+      final profilePath = _getProfilePath(role);
       data['updatedAt'] = DateTime.now().toIso8601String();
-      await _database.ref(uid).update(data);
+      await _database.ref().child(profilePath).child(uid).update(data);
     } catch (e) {
       rethrow;
     }
@@ -88,8 +104,8 @@ class AuthService {
   // Cek apakah user adalah admin
   Future<bool> isAdmin(String uid) async {
     try {
-      final snapshot = await _database.ref(uid).child('role').get();
-      return snapshot.exists && snapshot.value == 'Admin';
+      final snapshot = await _database.ref().child('admin_profiles').child(uid).get();
+      return snapshot.exists;
     } catch (e) {
       return false;
     }
