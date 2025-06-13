@@ -6,13 +6,13 @@ class SearchProvider with ChangeNotifier {
   String selectedCategory = 'Umum';
 
   final PageController pageController = PageController(viewportFraction: 0.9);
-  final int totalPages = 2; // disesuaikan dengan 2 gambar promo
+  final int totalPages = 3; // disesuaikan dengan 2 gambar promo
   int currentPage = 0;
   Timer? carouselTimer;
 
-  SearchProvider() {
-    startAutoScroll();
-  }
+  // SearchProvider() {
+  //   startAutoScroll();
+  // }
 
   void selectCategory(String category) {
     selectedCategory = category;

@@ -88,6 +88,8 @@ class DoctorDetailScreen extends StatelessWidget {
                 // Create booking
                 await bookingProvider.createBooking(
                   doctor,
+                  date,
+                  time = time,
                   context,
                 );
 

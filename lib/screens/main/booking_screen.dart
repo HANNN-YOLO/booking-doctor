@@ -198,6 +198,8 @@ class BookingScreen {
                                 try {
                                   await bookingProvider.createBooking(
                                     doctor,
+                                    selectedDate!,
+                                    selectedTime!,
                                     context,
                                   );
                                   Navigator.pop(context);
