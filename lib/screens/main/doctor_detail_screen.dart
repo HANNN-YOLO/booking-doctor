@@ -1,4 +1,7 @@
 import 'package:booking_doctor/providers/dokter_provider.dart';
+import 'package:booking_doctor/providers/booking_provider.dart';
+import 'package:booking_doctor/models/booking.dart';
+import 'package:booking_doctor/models/doctor.dart';
 import 'package:flutter/material.dart';
 import './booking_screen.dart';
 import 'package:provider/provider.dart';
@@ -17,13 +20,13 @@ class DoctorDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildScheduleItem(String time, bool isBooked) {
+  Widget _buildScheduleItem(String time, bool isBooked, Function()? onTap) {
     return Container(
       margin: EdgeInsets.only(right: 8, bottom: 8),
       child: FilterChip(
         label: Text(time),
         selected: false,
-        onSelected: isBooked ? null : (_) {},
+        onSelected: isBooked ? null : (_) => onTap?.call(),
         backgroundColor: isBooked ? Colors.grey[300] : Color(0xFF96D165),
         labelStyle: TextStyle(
           color: isBooked ? Colors.grey[600] : Colors.white,
@@ -36,12 +39,90 @@ class DoctorDetailScreen extends StatelessWidget {
     );
   }
 
+  void _showBookingDialog(
+      BuildContext context, Doctor doctor, DateTime date, String time) {
+    final bookingProvider =
+        Provider.of<BookingProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Konfirmasi Booking'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Tanggal: ${date.day}/${date.month}/${date.year}'),
+            Text('Waktu: $time'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF96D165),
+            ),
+            onPressed: () async {
+              try {
+                // Check availability first
+                bool isAvailable = await bookingProvider.checkAvailability(
+                  doctor.kunci,
+                  date,
+                  time,
+                );
+
+                if (!isAvailable) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Maaf, jadwal ini sudah dibooking'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  Navigator.pop(context);
+                  return;
+                }
+
+                // Create booking
+                await bookingProvider.createBooking(
+                  doctor,
+                  context,
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Booking berhasil dibuat!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pop(context);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Terjadi kesalahan: ${e.toString()}'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                Navigator.pop(context);
+              }
+            },
+            child: Text('Konfirmasi'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final data = ModalRoute.of(context)?.settings.arguments as String;
     final mydata = Provider.of<DokterProvider>(context)
         .dumydata
         .firstWhere((dat) => dat.kunci == data);
+    final bookingProvider = Provider.of<BookingProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -185,40 +266,71 @@ class DoctorDetailScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16),
-                    ...mydata.availableDays
-                        .map((day) => Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Hari di sebelah kiri
-                                  Container(
-                                    width: 80,
-                                    child: Text(
-                                      day.day,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  // Separator
-                                  SizedBox(width: 16),
-                                  // Jam-jam di sebelah kanan
-                                  Expanded(
-                                    child: Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children: day.availableTimes
-                                          .map((time) => _buildScheduleItem(
-                                              time.time, time.isBooked))
-                                          .toList(),
-                                    ),
-                                  ),
-                                ],
+                    ...mydata.availableDays.map((day) {
+                      // Get the specific date for this day
+                      final date = day.weekStartDate;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 80,
+                              child: Text(
+                                day.day,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ))
-                        .toList(),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: StreamBuilder<List<Booking>>(
+                                stream: bookingProvider
+                                    .getBookingsByDoctor(mydata.kunci),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+
+                                  final bookings = snapshot.data ?? [];
+
+                                  return Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: day.availableTimes.map((time) {
+                                      // Check if this time slot is booked
+                                      final isBooked = bookings.any((booking) =>
+                                          booking.bookingDate.year ==
+                                              date.year &&
+                                          booking.bookingDate.month ==
+                                              date.month &&
+                                          booking.bookingDate.day == date.day &&
+                                          booking.time == time.time &&
+                                          ['pending', 'confirmed']
+                                              .contains(booking.status));
+
+                                      return _buildScheduleItem(
+                                        time.time,
+                                        isBooked,
+                                        () => _showBookingDialog(
+                                          context,
+                                          mydata,
+                                          time.date,
+                                          time.time,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   ],
                 ),
               ),

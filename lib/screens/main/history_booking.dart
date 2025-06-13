@@ -30,8 +30,8 @@ class HistoryBookingScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             _BookingHistoryList(status: 'pending'),
-            _BookingHistoryList(status: 'approved'),
-            _BookingHistoryList(status: 'rejected'),
+            _BookingHistoryList(status: 'confirmed'),
+            _BookingHistoryList(status: 'cancelled'),
           ],
         ),
       ),
@@ -86,7 +86,11 @@ class _BookingHistoryList extends StatelessWidget {
     return Consumer<BookingProvider>(
       builder: (context, bookingProvider, child) {
         return StreamBuilder<List<Booking>>(
-          stream: bookingProvider.getUserBookings(status),
+          stream: status == 'pending'
+              ? bookingProvider.getCurrentUserBookings()
+              : status == 'confirmed'
+                  ? bookingProvider.getCurrentUserConfirmedBookings()
+                  : bookingProvider.getCurrentUserCancelledBookings(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -100,9 +104,9 @@ class _BookingHistoryList extends StatelessWidget {
             if (bookings == null || bookings.isEmpty) {
               return Center(
                 child: Text(
-                  status == 'approved'
+                  status == 'confirmed'
                       ? 'Belum ada booking yang disetujui'
-                      : status == 'rejected'
+                      : status == 'cancelled'
                           ? 'Belum ada booking yang ditolak'
                           : 'Belum ada booking yang menunggu persetujuan',
                 ),
@@ -124,7 +128,7 @@ class _BookingHistoryList extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      'dr. ${booking.doctorName}',
+                      'ID Dokter: ${booking.doctorId}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -132,30 +136,19 @@ class _BookingHistoryList extends StatelessWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Spesialis ${booking.specialty}'),
                         Text(
-                          '${_formatDate(booking.selectedDate)}, ${booking.selectedTime}',
+                          '${_formatDate(booking.bookingDate)}, ${booking.time}',
                           style: TextStyle(
                             color: Colors.black87,
                           ),
                         ),
-                        if (status == 'approved' && booking.approvedAt != null)
-                          Text(
-                            'Disetujui pada: ${_formatDateTime(booking.approvedAt!)}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                        Text(
+                          'Dibuat pada: ${_formatDateTime(booking.createdAt)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
-                        if (status == 'rejected' &&
-                            booking.rejectionReason != null)
-                          Text(
-                            'Alasan: ${booking.rejectionReason}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.red,
-                            ),
-                          ),
+                        ),
                         if (status == 'pending')
                           Text(
                             'Menunggu persetujuan admin',
@@ -196,9 +189,9 @@ class _BookingHistoryList extends StatelessWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'approved':
+      case 'confirmed':
         return Color(0xFF96D165);
-      case 'rejected':
+      case 'cancelled':
         return Colors.red;
       case 'pending':
         return Colors.orange;
@@ -209,9 +202,9 @@ class _BookingHistoryList extends StatelessWidget {
 
   String _getStatusText(String status) {
     switch (status) {
-      case 'approved':
+      case 'confirmed':
         return 'Disetujui';
-      case 'rejected':
+      case 'cancelled':
         return 'Ditolak';
       case 'pending':
         return 'Menunggu';

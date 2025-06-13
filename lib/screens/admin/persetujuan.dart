@@ -54,7 +54,7 @@ class Persetujuan extends StatelessWidget {
       body: Consumer<BookingProvider>(
         builder: (context, bookingProvider, child) {
           return StreamBuilder<List<Booking>>(
-            stream: bookingProvider.pendingBookings,
+            stream: bookingProvider.getPendingBookings(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -89,7 +89,7 @@ class Persetujuan extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Pasien: ${booking.patientName}',
+                                      'ID Pasien: ${booking.patientId}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -97,7 +97,7 @@ class Persetujuan extends StatelessWidget {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'Dokter: ${booking.doctorName}',
+                                      'ID Dokter: ${booking.doctorId}',
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
@@ -126,9 +126,8 @@ class Persetujuan extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 8),
-                          Text('Spesialis: ${booking.specialty}'),
                           Text(
-                            'Jadwal: ${_formatDate(booking.selectedDate)}, ${booking.selectedTime}',
+                            'Jadwal: ${_formatDate(booking.bookingDate)}, ${booking.time}',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                             ),
@@ -139,7 +138,7 @@ class Persetujuan extends StatelessWidget {
                             children: [
                               TextButton(
                                 onPressed: () => _showRejectDialog(
-                                    context, booking.kunci, bookingProvider),
+                                    context, booking.id, bookingProvider),
                                 child: Text(
                                   'Tolak',
                                   style: TextStyle(color: Colors.red),
@@ -148,16 +147,22 @@ class Persetujuan extends StatelessWidget {
                               SizedBox(width: 16),
                               ElevatedButton(
                                 onPressed: () async {
-                                  final success =
-                                      await bookingProvider.approveBooking(
-                                    booking.kunci,
-                                    context,
-                                  );
-                                  if (success) {
+                                  try {
+                                    await bookingProvider.approveBooking(
+                                        booking.id, context);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                          content: Text(
-                                              'Booking berhasil disetujui')),
+                                        content:
+                                            Text('Booking berhasil disetujui'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Error: ${e.toString()}'),
+                                        backgroundColor: Colors.red,
+                                      ),
                                     );
                                   }
                                 },
@@ -209,21 +214,33 @@ class Persetujuan extends StatelessWidget {
             onPressed: () async {
               if (reasonController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Harap masukkan alasan penolakan')),
+                  SnackBar(
+                    content: Text('Harap masukkan alasan penolakan'),
+                    backgroundColor: Colors.orange,
+                  ),
                 );
                 return;
               }
 
-              final success = await bookingProvider.rejectBooking(
-                bookingId,
-                reasonController.text,
-                context,
-              );
-
-              if (success) {
+              try {
+                await bookingProvider.rejectBooking(
+                  bookingId,
+                  reasonController.text,
+                  context,
+                );
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Booking berhasil ditolak')),
+                  SnackBar(
+                    content: Text('Booking berhasil ditolak'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error: ${e.toString()}'),
+                    backgroundColor: Colors.red,
+                  ),
                 );
               }
             },

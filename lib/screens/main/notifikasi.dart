@@ -58,7 +58,7 @@ class NotifikasiScreen extends StatelessWidget {
       body: Consumer<BookingProvider>(
         builder: (context, bookingProvider, child) {
           return StreamBuilder<List<Booking>>(
-            stream: bookingProvider.getUserNotifications(),
+            stream: bookingProvider.getCurrentUserNotifications(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -77,18 +77,18 @@ class NotifikasiScreen extends StatelessWidget {
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
                   final booking = notifications[index];
-                  final isApproved = booking.status == 'approved';
+                  final isConfirmed = booking.status == 'confirmed';
 
                   return Card(
                     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ListTile(
                       title: Text(
-                        isApproved
+                        isConfirmed
                             ? 'Admin telah menyetujui untuk janji TemuDokter'
                             : 'Admin telah menolak janji TemuDokter',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isApproved ? Color(0xFF96D165) : Colors.red,
+                          color: isConfirmed ? Color(0xFF96D165) : Colors.red,
                         ),
                       ),
                       subtitle: Column(
@@ -96,57 +96,28 @@ class NotifikasiScreen extends StatelessWidget {
                         children: [
                           SizedBox(height: 4),
                           Text(
-                            'Dengan dr. ${booking.doctorName} (Spesialis ${booking.specialty})',
+                            'ID Dokter: ${booking.doctorId}',
                             style: TextStyle(fontSize: 14),
                           ),
                           Text(
-                            'pada ${_formatDate(booking.selectedDate)}, ${booking.selectedTime}',
+                            'pada ${_formatDate(booking.bookingDate)}, ${booking.time}',
                             style: TextStyle(fontSize: 14),
                           ),
-                          if (isApproved && booking.approvedAt != null)
-                            Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Disetujui pada: ${_formatDateTime(booking.approvedAt!)}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Text(
+                              'Dibuat pada: ${_formatDateTime(booking.createdAt)}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
                               ),
                             ),
-                          if (!isApproved)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (booking.rejectedAt != null)
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      'Ditolak pada: ${_formatDateTime(booking.rejectedAt!)}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                if (booking.rejectionReason != null)
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      'Alasan: ${booking.rejectionReason}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                          ),
                         ],
                       ),
                       trailing: Icon(
-                        isApproved ? Icons.check_circle : Icons.cancel,
-                        color: isApproved ? Color(0xFF96D165) : Colors.red,
+                        isConfirmed ? Icons.check_circle : Icons.cancel,
+                        color: isConfirmed ? Color(0xFF96D165) : Colors.red,
                       ),
                     ),
                   );

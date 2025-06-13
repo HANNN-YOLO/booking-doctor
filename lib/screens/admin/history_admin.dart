@@ -67,11 +67,11 @@ class HistoryAdmin extends StatelessWidget {
         body: TabBarView(
           children: [
             _BookingHistoryList(
-                status: 'approved',
+                status: 'confirmed',
                 formatDate: _formatDate,
                 formatDateTime: _formatDateTime),
             _BookingHistoryList(
-                status: 'rejected',
+                status: 'cancelled',
                 formatDate: _formatDate,
                 formatDateTime: _formatDateTime),
           ],
@@ -98,9 +98,9 @@ class _BookingHistoryList extends StatelessWidget {
     return Consumer<BookingProvider>(
       builder: (context, bookingProvider, child) {
         return StreamBuilder<List<Booking>>(
-          stream: status == 'approved'
-              ? bookingProvider.approvedBookings
-              : bookingProvider.rejectedBookings,
+          stream: status == 'confirmed'
+              ? bookingProvider.getConfirmedBookings()
+              : bookingProvider.getCancelledBookings(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -113,7 +113,7 @@ class _BookingHistoryList extends StatelessWidget {
             final bookings = snapshot.data;
             if (bookings == null || bookings.isEmpty) {
               return Center(
-                  child: Text(status == 'approved'
+                  child: Text(status == 'confirmed'
                       ? 'Belum ada riwayat booking yang disetujui'
                       : 'Belum ada riwayat booking yang ditolak'));
             }
@@ -137,7 +137,7 @@ class _BookingHistoryList extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Pasien: ${booking.patientName}',
+                                    'ID Pasien: ${booking.patientId}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -145,7 +145,7 @@ class _BookingHistoryList extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    'Dokter ${booking.doctorName}',
+                                    'ID Dokter: ${booking.doctorId}',
                                     style: TextStyle(
                                       fontSize: 14,
                                     ),
@@ -159,13 +159,13 @@ class _BookingHistoryList extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: status == 'approved'
+                                color: status == 'confirmed'
                                     ? Color(0xFF96D165)
                                     : Colors.red,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                status == 'approved' ? 'Disetujui' : 'Ditolak',
+                                status == 'confirmed' ? 'Disetujui' : 'Ditolak',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -175,52 +175,22 @@ class _BookingHistoryList extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 8),
-                        Text('Spesialis: ${booking.specialty}'),
                         Text(
-                          'Jadwal: ${formatDate(booking.selectedDate)}, ${booking.selectedTime}',
+                          'Jadwal: ${formatDate(booking.bookingDate)}, ${booking.time}',
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        if (status == 'approved' && booking.approvedAt != null)
-                          Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: Text(
-                              'Disetujui pada: ${formatDateTime(booking.approvedAt!)}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Text(
+                            'Dibuat pada: ${formatDateTime(booking.createdAt)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
                           ),
-                        if (status == 'rejected')
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (booking.rejectedAt != null)
-                                Padding(
-                                  padding: EdgeInsets.only(top: 8),
-                                  child: Text(
-                                    'Ditolak pada: ${formatDateTime(booking.rejectedAt!)}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              if (booking.rejectionReason != null)
-                                Padding(
-                                  padding: EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    'Alasan: ${booking.rejectionReason}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
+                        ),
                       ],
                     ),
                   ),

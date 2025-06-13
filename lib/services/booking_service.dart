@@ -10,10 +10,9 @@ class BookingService {
   // Membuat booking baru
   Future<String> createBooking({
     required String userId,
-    required Doctor doctor,
-    required String selectedDay,
-    required String selectedTime,
-    required DateTime selectedDate,
+    required String doctorId,
+    required DateTime bookingDate,
+    required String time,
   }) async {
     try {
       // 1. Ambil data profil user dari Realtime Database
@@ -22,37 +21,25 @@ class BookingService {
         throw Exception('Data profil tidak ditemukan');
       }
 
-      final userData = Map<String, dynamic>.from(userSnapshot.value as Map);
-      final patientName = userData['name'] as String? ?? 'Pasien';
-
       // 2. Buat referensi dokumen baru di Firestore
-      final bookingRef = _firestore.collection('booking').doc();
+      final bookingRef = _firestore.collection('bookings').doc();
 
-      // 3. Buat objek booking
-      final booking = Booking(
-        kunci: bookingRef.id,
-        userId: userId,
-        patientName: patientName,
-        id_doctor: doctor.kunci,
-        doctorName: doctor.name,
-        specialty: doctor.specialty,
-        selectedDay: selectedDay,
-        selectedTime: selectedTime,
-        status: 'pending',
-        createdAt: DateTime.now(),
-        selectedDate: selectedDate,
-      );
+      // 3. Buat data booking
+      final bookingData = {
+        'doctorId': doctorId,
+        'patientId': userId,
+        'bookingDate': Timestamp.fromDate(DateTime(
+          bookingDate.year,
+          bookingDate.month,
+          bookingDate.day,
+        )),
+        'time': time,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      };
 
       // 4. Simpan booking ke Firestore
-      await bookingRef.set(booking.toMap());
-
-      // 5. Update status ketersediaan waktu dokter
-      await _updateDoctorAvailability(
-        doctorId: doctor.kunci,
-        day: selectedDay,
-        time: selectedTime,
-        isBooked: true,
-      );
+      await bookingRef.set(bookingData);
 
       return bookingRef.id;
     } catch (e) {
@@ -60,48 +47,10 @@ class BookingService {
     }
   }
 
-  // Update status ketersediaan waktu dokter
-  Future<void> _updateDoctorAvailability({
-    required String doctorId,
-    required String day,
-    required String time,
-    required bool isBooked,
-  }) async {
-    final doctorRef = _firestore.collection('doctor').doc(doctorId);
-
-    await _firestore.runTransaction((transaction) async {
-      final doctorDoc = await transaction.get(doctorRef);
-      if (!doctorDoc.exists) {
-        throw Exception('Dokter tidak ditemukan');
-      }
-
-      final data = doctorDoc.data()!;
-      final availableDays =
-          List<Map<String, dynamic>>.from(data['availableDays']);
-
-      for (var i = 0; i < availableDays.length; i++) {
-        if (availableDays[i]['day'] == day) {
-          final times = List<Map<String, dynamic>>.from(
-              availableDays[i]['availableTimes']);
-          for (var j = 0; j < times.length; j++) {
-            if (times[j]['time'] == time) {
-              times[j]['isBooked'] = isBooked;
-              break;
-            }
-          }
-          availableDays[i]['availableTimes'] = times;
-          break;
-        }
-      }
-
-      transaction.update(doctorRef, {'availableDays': availableDays});
-    });
-  }
-
   // Mendapatkan daftar booking pending untuk admin
   Stream<List<Booking>> getPendingBookings() {
     return _firestore
-        .collection('booking')
+        .collection('bookings')
         .where('status', isEqualTo: 'pending')
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -115,8 +64,8 @@ class BookingService {
   // Mendapatkan booking berdasarkan status untuk user tertentu
   Stream<List<Booking>> getUserBookings(String userId, String status) {
     return _firestore
-        .collection('booking')
-        .where('userId', isEqualTo: userId)
+        .collection('bookings')
+        .where('patientId', isEqualTo: userId)
         .where('status', isEqualTo: status)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -129,54 +78,26 @@ class BookingService {
 
   // Menyetujui booking
   Future<void> approveBooking(String bookingId) async {
-    final bookingRef = _firestore.collection('booking').doc(bookingId);
-
-    await _firestore.runTransaction((transaction) async {
-      final bookingDoc = await transaction.get(bookingRef);
-      if (!bookingDoc.exists) {
-        throw Exception('Booking tidak ditemukan');
-      }
-
-      transaction.update(bookingRef, {
-        'status': 'approved',
-        'approvedAt': FieldValue.serverTimestamp(),
-      });
+    await _firestore.collection('bookings').doc(bookingId).update({
+      'status': 'confirmed',
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
   // Menolak booking
   Future<void> rejectBooking(String bookingId, String reason) async {
-    final bookingRef = _firestore.collection('booking').doc(bookingId);
-
-    await _firestore.runTransaction((transaction) async {
-      final bookingDoc = await transaction.get(bookingRef);
-      if (!bookingDoc.exists) {
-        throw Exception('Booking tidak ditemukan');
-      }
-
-      final bookingData = bookingDoc.data()!;
-
-      // Reset ketersediaan waktu dokter
-      await _updateDoctorAvailability(
-        doctorId: bookingData['id_doctor'],
-        day: bookingData['selectedDay'],
-        time: bookingData['selectedTime'],
-        isBooked: false,
-      );
-
-      transaction.update(bookingRef, {
-        'status': 'rejected',
-        'rejectionReason': reason,
-        'rejectedAt': FieldValue.serverTimestamp(),
-      });
+    await _firestore.collection('bookings').doc(bookingId).update({
+      'status': 'cancelled',
+      'cancellationReason': reason,
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
   // Mendapatkan semua booking yang disetujui (untuk admin)
-  Stream<List<Booking>> getApprovedBookings() {
+  Stream<List<Booking>> getConfirmedBookings() {
     return _firestore
-        .collection('booking')
-        .where('status', isEqualTo: 'approved')
+        .collection('bookings')
+        .where('status', isEqualTo: 'confirmed')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -187,10 +108,10 @@ class BookingService {
   }
 
   // Mendapatkan semua booking yang ditolak (untuk admin)
-  Stream<List<Booking>> getRejectedBookings() {
+  Stream<List<Booking>> getCancelledBookings() {
     return _firestore
-        .collection('booking')
-        .where('status', isEqualTo: 'rejected')
+        .collection('bookings')
+        .where('status', isEqualTo: 'cancelled')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -200,12 +121,12 @@ class BookingService {
     });
   }
 
-  // Mendapatkan notifikasi booking (approved dan rejected)
+  // Mendapatkan notifikasi booking (confirmed dan cancelled)
   Stream<List<Booking>> getUserNotificationsWithStatus(String userId) {
     return _firestore
-        .collection('booking')
-        .where('userId', isEqualTo: userId)
-        .where('status', whereIn: ['approved', 'rejected'])
+        .collection('bookings')
+        .where('patientId', isEqualTo: userId)
+        .where('status', whereIn: ['confirmed', 'cancelled'])
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -213,5 +134,23 @@ class BookingService {
               .map((doc) => Booking.fromMap(doc.data(), doc.id))
               .toList();
         });
+  }
+
+  // Check availability of a specific time slot
+  Future<bool> checkAvailability(
+      String doctorId, DateTime date, String time) async {
+    final querySnapshot = await _firestore
+        .collection('bookings')
+        .where('doctorId', isEqualTo: doctorId)
+        .where('bookingDate',
+            isEqualTo: Timestamp.fromDate(DateTime(
+              date.year,
+              date.month,
+              date.day,
+            )))
+        .where('time', isEqualTo: time)
+        .where('status', whereIn: ['pending', 'confirmed']).get();
+
+    return querySnapshot.docs.isEmpty;
   }
 }

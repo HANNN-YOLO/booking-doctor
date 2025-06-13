@@ -36,12 +36,15 @@ class BookingScreen {
         .dumydata
         .firstWhere((dat) => dat.kunci == doctorKey);
 
+    DateTime? selectedDate;
+    String? selectedTime;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Buat Janji dengan Dr. ${doctor.name}'),
-        content: Consumer<BookingProvider>(
-          builder: (context, provider, child) {
+        content: StatefulBuilder(
+          builder: (context, setState) {
             // Cek apakah tanggal memiliki jadwal tersedia
             bool hasAvailableSlots(DateTime date) {
               final dayName = _getDayName(DateFormat('EEEE').format(date));
@@ -53,7 +56,7 @@ class BookingScreen {
                   weekStartDate: DateTime.now(),
                 ),
               );
-              return availableDay.availableTimes.any((time) => !time.isBooked);
+              return availableDay.availableTimes.isNotEmpty;
             }
 
             // Mendapatkan slot waktu yang tersedia untuk tanggal tertentu
@@ -67,9 +70,7 @@ class BookingScreen {
                   weekStartDate: DateTime.now(),
                 ),
               );
-              return availableDay.availableTimes
-                  .where((time) => !time.isBooked)
-                  .toList();
+              return availableDay.availableTimes;
             }
 
             return Container(
@@ -85,9 +86,9 @@ class BookingScreen {
                     child: TableCalendar(
                       firstDay: DateTime.now(),
                       lastDay: DateTime.now().add(Duration(days: 30)),
-                      focusedDay: provider.selectedDate ?? DateTime.now(),
+                      focusedDay: selectedDate ?? DateTime.now(),
                       selectedDayPredicate: (day) =>
-                          isSameDay(provider.selectedDate, day),
+                          isSameDay(selectedDate, day),
                       calendarFormat: CalendarFormat.month,
                       availableGestures: AvailableGestures.all,
                       headerStyle: HeaderStyle(
@@ -106,22 +107,21 @@ class BookingScreen {
                             day.isAfter(
                                 DateTime.now().subtract(Duration(days: 1)));
                       },
-                      onDaySelected: (selectedDay, focusedDay) {
-                        provider.selectedDate = selectedDay;
-                        provider.selectedDay =
-                            _getDayName(DateFormat('EEEE').format(selectedDay));
-                        provider.selectedTime = null;
-                        provider.notifyListeners();
+                      onDaySelected: (selected, focused) {
+                        setState(() {
+                          selectedDate = selected;
+                          selectedTime = null;
+                        });
                       },
                     ),
                   ),
 
                   // Available Time Slots
-                  if (provider.selectedDate != null) ...[
+                  if (selectedDate != null) ...[
                     Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
-                        'Jadwal Tersedia - ${DateFormat('dd MMMM yyyy').format(provider.selectedDate!)}',
+                        'Jadwal Tersedia - ${DateFormat('dd MMMM yyyy').format(selectedDate!)}',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -133,22 +133,35 @@ class BookingScreen {
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children:
-                              getAvailableTimesForDate(provider.selectedDate!)
-                                  .map((time) => ChoiceChip(
+                          children: getAvailableTimesForDate(selectedDate!)
+                              .map((time) => FutureBuilder<bool>(
+                                    future: bookingProvider.checkAvailability(
+                                      doctorKey,
+                                      selectedDate!,
+                                      time.time,
+                                    ),
+                                    builder: (context, snapshot) {
+                                      final isAvailable =
+                                          snapshot.data ?? false;
+                                      return ChoiceChip(
                                         label: Text(time.time),
-                                        selected:
-                                            provider.selectedTime == time.time,
-                                        onSelected: (selected) {
-                                          if (selected) {
-                                            provider.selectedTime = time.time;
-                                            provider.timeController.text =
-                                                time.time;
-                                            provider.notifyListeners();
-                                          }
-                                        },
-                                      ))
-                                  .toList(),
+                                        selected: selectedTime == time.time,
+                                        onSelected: isAvailable
+                                            ? (selected) {
+                                                if (selected) {
+                                                  setState(() {
+                                                    selectedTime = time.time;
+                                                  });
+                                                }
+                                              }
+                                            : null,
+                                        backgroundColor: isAvailable
+                                            ? null
+                                            : Colors.grey[300],
+                                      );
+                                    },
+                                  ))
+                              .toList(),
                         ),
                       ),
                     ),
@@ -172,7 +185,6 @@ class BookingScreen {
                     children: [
                       TextButton(
                         onPressed: () {
-                          provider.resetForm();
                           Navigator.pop(context);
                         },
                         child: Text('Batal'),
@@ -181,18 +193,26 @@ class BookingScreen {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: provider.selectedDay != null &&
-                                provider.selectedTime != null
+                        onPressed: selectedDate != null && selectedTime != null
                             ? () async {
-                                final success = await provider.createBooking(
-                                    doctor, context);
-                                if (success) {
+                                try {
+                                  await bookingProvider.createBooking(
+                                    doctor,
+                                    context,
+                                  );
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
                                           'Booking berhasil dibuat! Silakan tunggu konfirmasi.'),
                                       backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
                                     ),
                                   );
                                 }

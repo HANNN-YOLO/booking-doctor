@@ -3,8 +3,11 @@ import 'package:provider/provider.dart';
 import '../../providers/search_provider.dart';
 import '../../widgets/doctor_card.dart';
 import '../../providers/dokter_provider.dart';
+import 'profil_pasien.dart';
 
 class SearchScreen extends StatelessWidget {
+  const SearchScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SearchProvider>(context);
@@ -236,17 +239,24 @@ class SearchScreen extends StatelessWidget {
 
       // Bottom Navigation
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
         currentIndex: 0,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        backgroundColor: Colors.blue[700],
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfilPasien()),
+            );
+          }
+        },
+        items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today), label: 'Jadwal'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+            icon: Icon(Icons.home),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profil',
+          ),
         ],
       ),
     );
