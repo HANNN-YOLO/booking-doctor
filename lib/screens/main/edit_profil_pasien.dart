@@ -11,6 +11,7 @@ class EditProfilPasien extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
   final _namaController = TextEditingController();
+  final _imageUrlController = TextEditingController();
   final _nohpController = TextEditingController();
   final _tglLahirController = TextEditingController();
   final _asalController = TextEditingController();
@@ -62,7 +63,7 @@ class EditProfilPasien extends StatelessWidget {
       body: Center(
         child: Container(
           color: Colors.white,
-          height: 500,
+          height: 580,
           width: 400,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -83,7 +84,17 @@ class EditProfilPasien extends StatelessWidget {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _imageUrlController,
+                    decoration: InputDecoration(
+                      labelText: 'URL Gambar',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _nohpController,
                     decoration: const InputDecoration(
@@ -98,7 +109,7 @@ class EditProfilPasien extends StatelessWidget {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _tglLahirController,
                     decoration: InputDecoration(
@@ -117,7 +128,7 @@ class EditProfilPasien extends StatelessWidget {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _asalController,
                     decoration: const InputDecoration(
@@ -131,14 +142,14 @@ class EditProfilPasien extends StatelessWidget {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _alamatController,
                     decoration: const InputDecoration(
                       labelText: 'Alamat',
                       border: OutlineInputBorder(),
                     ),
-                    maxLines: 3,
+                    maxLines: 2,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Alamat tidak boleh kosong';
@@ -146,7 +157,7 @@ class EditProfilPasien extends StatelessWidget {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Consumer<ProfileProvider>(
                     builder: (context, profileProvider, child) {
                       return ElevatedButton(
@@ -160,6 +171,7 @@ class EditProfilPasien extends StatelessWidget {
                                   .toIso8601String(),
                               'asal': _asalController.text,
                               'alamat': _alamatController.text,
+                              'gambar': _imageUrlController
                             };
 
                             // Get current user ID from Auth Provider
@@ -182,9 +194,15 @@ class EditProfilPasien extends StatelessWidget {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
+                          backgroundColor: const Color(0xFF96D165),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        child: const Text('Simpan Perubahan'),
+                        child: const Text(
+                          'Simpan Perubahan',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       );
                     },
                   ),

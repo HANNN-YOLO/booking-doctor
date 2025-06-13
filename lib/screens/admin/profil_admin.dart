@@ -61,7 +61,8 @@ class ProfilAdmin extends StatelessWidget {
                 InkWell(
                   onTap: () => Navigator.pushNamed(context, '/edit-admin'),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       border: Border(
@@ -107,7 +108,7 @@ class ProfilAdmin extends StatelessWidget {
                 _buildProfileItem(
                   icon: Icons.calendar_today,
                   title: 'Tanggal Lahir',
-                  value: userProfile?['tgllahir'] != null 
+                  value: userProfile?['tgllahir'] != null
                       ? userProfile!['tgllahir'].toString().split(' ')[0]
                       : '-',
                 ),
@@ -204,4 +205,4 @@ class ProfilAdmin extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -55,8 +55,8 @@ class ProfilPasien extends StatelessWidget {
                                       profileData['gambar'].isNotEmpty
                                   ? NetworkImage(profileData['gambar'])
                                       as ImageProvider
-                                  : const AssetImage(
-                                      'assets/default_profile.png'),
+                                  : const NetworkImage(
+                                      'https://picsum.photos/id/15/200/300'),
                             ),
                             const SizedBox(height: 16),
                             Text(

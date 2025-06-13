@@ -22,6 +22,7 @@ class ProfileService {
         'role': daftar.role,
         'profile_completed': true,
         'updated_at': DateTime.now().toIso8601String(),
+        'gambar': daftar.gambar,
       });
     } catch (e) {
       throw 'Gagal membuat profil: $e';
@@ -33,16 +34,18 @@ class ProfileService {
     try {
       if (role == null) {
         // Jika role tidak diketahui, cek di kedua lokasi
-        final adminSnapshot = await _database.child('admin_profiles').child(uid).get();
+        final adminSnapshot =
+            await _database.child('admin_profiles').child(uid).get();
         if (adminSnapshot.exists) {
           return Map<String, dynamic>.from(adminSnapshot.value as Map);
         }
-        
-        final patientSnapshot = await _database.child('pasien_profiles').child(uid).get();
+
+        final patientSnapshot =
+            await _database.child('pasien_profiles').child(uid).get();
         if (patientSnapshot.exists) {
           return Map<String, dynamic>.from(patientSnapshot.value as Map);
         }
-        
+
         return null;
       }
 
@@ -82,7 +85,7 @@ class ProfileService {
         if (adminSnapshot.exists && (adminSnapshot.value as bool)) {
           return true;
         }
-        
+
         final patientSnapshot = await _database
             .child('pasien_profiles')
             .child(uid)
