@@ -1,4 +1,5 @@
 import 'package:booking_doctor/providers/dokter_provider.dart';
+import 'package:booking_doctor/screens/main/profil_pasien.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
           '/notifikasi': (context) => NotifikasiScreen(),
           '/history-booking': (context) => HistoryBookingScreen(),
           '/chat': (context) => ChatScreen(),
+          '/profil_pasien': (context) => ProfilPasien(),
           '/kekuatan_admin': (context) => kekuatan_admin(),
           '/profil-admin': (context) => ProfilAdmin(),
           '/edit-admin': (context) => EditAdmin(),

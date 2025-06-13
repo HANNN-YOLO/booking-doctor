@@ -6,6 +6,7 @@ import 'edit_profil_pasien.dart';
 import 'package:intl/intl.dart';
 
 class ProfilPasien extends StatelessWidget {
+  static const arah = 'profil_pasien';
   const ProfilPasien({Key? key}) : super(key: key);
 
   @override
@@ -151,65 +152,33 @@ class ProfilPasien extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pushReplacementNamed(
-                                    context, '/search_screen');
-                              },
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.home,
-                                      color: Colors.grey[600],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Home',
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              color: const Color(0xFF96D165).withOpacity(0.1),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Icon(
-                                    Icons.person,
-                                    color: Color(0xFF96D165),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Profil',
-                                    style: TextStyle(
-                                      color: Color(0xFF96D165),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: 1,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white,
+            backgroundColor: Colors.blue[700],
+            onTap: (index) {
+              if (index == 0) {
+                Navigator.pushNamed(context, '/');
+              } else if (index == 1) {
+                Navigator.pushNamed(context, '/profil_pasien');
+              }
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profil',
+              ),
+            ],
+          ),
         );
       },
     );

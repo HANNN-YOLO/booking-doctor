@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../models/daftar.dart';
 
 class EditProfilPasien extends StatelessWidget {
+  static const arah = 'edit_profil_pasien';
   EditProfilPasien({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
@@ -54,133 +55,142 @@ class EditProfilPasien extends StatelessWidget {
     _initializeControllers(context);
 
     return Scaffold(
+      backgroundColor: Colors.grey,
       appBar: AppBar(
         title: const Text('Edit Profil'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _namaController,
-                decoration: const InputDecoration(
-                  labelText: 'Nama Lengkap',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _nohpController,
-                decoration: const InputDecoration(
-                  labelText: 'Nomor Telepon',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nomor telepon tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _tglLahirController,
-                decoration: InputDecoration(
-                  labelText: 'Tanggal Lahir',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
+      body: Center(
+        child: Container(
+          color: Colors.white,
+          height: 500,
+          width: 400,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _namaController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nama Lengkap',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nama tidak boleh kosong';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                readOnly: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Tanggal lahir tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _asalController,
-                decoration: const InputDecoration(
-                  labelText: 'Asal',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Asal tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _alamatController,
-                decoration: const InputDecoration(
-                  labelText: 'Alamat',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Alamat tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              Consumer<ProfileProvider>(
-                builder: (context, profileProvider, child) {
-                  return ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        final updatedData = {
-                          'nama': _namaController.text,
-                          'nohp': int.tryParse(_nohpController.text),
-                          'tgllahir': DateFormat('dd/MM/yyyy')
-                              .parse(_tglLahirController.text)
-                              .toIso8601String(),
-                          'asal': _asalController.text,
-                          'alamat': _alamatController.text,
-                        };
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _nohpController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nomor Telepon',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nomor telepon tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _tglLahirController,
+                    decoration: InputDecoration(
+                      labelText: 'Tanggal Lahir',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () => _selectDate(context),
+                      ),
+                    ),
+                    readOnly: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Tanggal lahir tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _asalController,
+                    decoration: const InputDecoration(
+                      labelText: 'Asal',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Asal tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _alamatController,
+                    decoration: const InputDecoration(
+                      labelText: 'Alamat',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Alamat tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  Consumer<ProfileProvider>(
+                    builder: (context, profileProvider, child) {
+                      return ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final updatedData = {
+                              'nama': _namaController.text,
+                              'nohp': int.tryParse(_nohpController.text),
+                              'tgllahir': DateFormat('dd/MM/yyyy')
+                                  .parse(_tglLahirController.text)
+                                  .toIso8601String(),
+                              'asal': _asalController.text,
+                              'alamat': _alamatController.text,
+                            };
 
-                        // Get current user ID from Auth Provider
-                        final userId =
-                            Provider.of<AuthProvider>(context, listen: false)
+                            // Get current user ID from Auth Provider
+                            final userId = Provider.of<AuthProvider>(context,
+                                    listen: false)
                                 .user
                                 ?.uid;
-                        if (userId != null) {
-                          final success = await profileProvider.updateProfile(
-                            userId,
-                            updatedData,
-                            context,
-                          );
+                            if (userId != null) {
+                              final success =
+                                  await profileProvider.updateProfile(
+                                userId,
+                                updatedData,
+                                context,
+                              );
 
-                          if (success && context.mounted) {
-                            Navigator.pop(context);
+                              if (success && context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            }
                           }
-                        }
-                      }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text('Simpan Perubahan'),
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text('Simpan Perubahan'),
-                  );
-                },
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

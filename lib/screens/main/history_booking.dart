@@ -127,12 +127,27 @@ class _BookingHistoryList extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    title: Text(
-                      'ID Dokter: ${booking.doctorId}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          // 'ID Dokter: ${booking.doctorId}',
+                          'Dokter: ${booking.doctorName ?? 'Tidak diketahui'}',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Spesialis: ${booking.doctorSpecialty ?? 'Tidak diketahui'}',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
                     ),
+                    // Text(
+                    //   'ID Dokter: ${booking.doctorId}',
+                    //   style: TextStyle(
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

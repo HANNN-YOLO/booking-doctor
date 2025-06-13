@@ -221,6 +221,7 @@ class SearchScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final doctor = isi.dumydata[index];
                         return DoctorCard(
+                          gambar: doctor.imageUrl,
                           name: doctor.name,
                           specialty: 'Spesialis ${doctor.specialty}',
                           onTap: () => Navigator.pushReplacementNamed(
@@ -239,19 +240,22 @@ class SearchScreen extends StatelessWidget {
 
       // Bottom Navigation
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: 0,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        backgroundColor: Colors.blue[700],
         onTap: (index) {
-          if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfilPasien()),
-            );
+          if (index == 0) {
+            Navigator.pushNamed(context, '/');
+          } else if (index == 1) {
+            Navigator.pushNamed(context, '/profil_pasien');
           }
         },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Dashboard',
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class DoctorCard extends StatelessWidget {
   final String name;
   final String specialty;
+  final gambar;
   final VoidCallback onTap;
 
   const DoctorCard({
     required this.name,
     required this.specialty,
+    required this.gambar,
     required this.onTap,
   });
 
@@ -19,10 +21,15 @@ class DoctorCard extends StatelessWidget {
       elevation: 3,
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: Colors.grey[300],
-          child: Icon(Icons.person, color: Colors.black),
+        leading: Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                  image: NetworkImage(gambar),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter)),
         ),
         title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
