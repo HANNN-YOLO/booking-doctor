@@ -171,7 +171,7 @@ class EditProfilPasien extends StatelessWidget {
                                   .toIso8601String(),
                               'asal': _asalController.text,
                               'alamat': _alamatController.text,
-                              'gambar': _imageUrlController
+                              'gambar': _imageUrlController.text
                             };
 
                             // Get current user ID from Auth Provider
