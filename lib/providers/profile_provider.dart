@@ -210,9 +210,11 @@ class ProfileProvider with ChangeNotifier {
   String? _error;
   bool _isProfileComplete = false;
   String? _role;
+  List<Daftar> _pasienList = [];
 
   // Getters
   Map<String, dynamic>? get profileData => _profileData;
+  List<Daftar> get pasienList => _pasienList;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isProfileComplete => _isProfileComplete;
@@ -416,7 +418,7 @@ class ProfileProvider with ChangeNotifier {
 
       if (snapshot.exists) {
         return Daftar.fromJson(
-          userId,
+          // userId, // UID sudah termasuk di dalam snapshot.value
           Map<String, dynamic>.from(snapshot.value as Map),
         );
       }
@@ -426,6 +428,54 @@ class ProfileProvider with ChangeNotifier {
       throw e.toString();
     } finally {
       _setLoading(false);
+    }
+  }
+
+  // Fetch all pasien profiles
+  Future<void> fetchAllPasien(BuildContext context) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+      _pasienList = await _profileService.getAllPasienProfiles();
+      pemberitahuan('Data semua pasien berhasil dimuat', context);
+    } catch (e) {
+      _setError(e.toString());
+      pemberitahuanError(
+          'Gagal memuat data semua pasien: ${e.toString()}', context);
+    } finally {
+      _setLoading(false);
+      notifyListeners();
+    }
+  }
+
+  // Load specific pasien profile by ID
+  Future<void> loadPasienProfileById(String userId, BuildContext context) async {
+    _setLoading(true);
+    _setError(null);
+    // Do not notify listeners yet, wait for data or error
+    // notifyListeners(); // Removed to avoid flicker if data loads quickly
+
+    try {
+      _profileData = await _profileService.getProfile(userId, role: 'pasien');
+      if (_profileData != null) {
+        final birthDateString = _profileData!['tgllahir'] as String?;
+        final age = _calculateAge(birthDateString);
+        _profileData!['usia'] = age;
+        _role = 'pasien'; // Set role as this is a pasien profile
+        // Clear error if a previous one existed for another profile
+        _setError(null);
+        // No pemberitahuan here to keep it focused on data loading for the screen
+        // If a global notification is needed, it can be added.
+      } else {
+        _setError('Profil pasien tidak ditemukan');
+        // Consider if a pemberitahuanError is needed here or if the screen handles it
+      }
+    } catch (e) {
+      _setError('Gagal memuat profil pasien: ${e.toString()}');
+      // Consider if a pemberitahuanError is needed here
+    } finally {
+      _setLoading(false);
+      notifyListeners(); // Notify listeners after all operations
     }
   }
 }

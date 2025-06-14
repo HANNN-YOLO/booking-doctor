@@ -115,4 +115,26 @@ class ProfileService {
     final profilePath = _getProfilePath(role);
     return _database.child(profilePath).child(uid).onValue;
   }
+
+  // Mengambil semua profil pasien
+  Future<List<Daftar>> getAllPasienProfiles() async {
+    try {
+      final snapshot = await _database.child('pasien_profiles').get();
+      if (snapshot.exists && snapshot.value != null) {
+        final Map<dynamic, dynamic> profilesMap =
+            snapshot.value as Map<dynamic, dynamic>;
+        final List<Daftar> profiles = [];
+        profilesMap.forEach((key, value) {
+          final profileData = Map<String, dynamic>.from(value as Map);
+          // Sertakan UID (key) dalam objek Daftar
+          profileData['uid'] = key;
+          profiles.add(Daftar.fromJson(profileData));
+        });
+        return profiles;
+      }
+      return [];
+    } catch (e) {
+      throw 'Gagal mengambil semua profil pasien: $e';
+    }
+  }
 }
