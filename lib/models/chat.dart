@@ -36,7 +36,8 @@ class Chat {
       'doctorId': id_doctor,
       'sender': sender,
       'message': message,
-      'timestamp': Timestamp.fromDate(timestamp), // convert DateTime ke Firestore
+      'timestamp':
+          Timestamp.fromDate(timestamp), // convert DateTime ke Firestore
     };
   }
 }
