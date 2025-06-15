@@ -379,7 +379,7 @@ class DoctorDetailScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       Navigator.of(context)
-                          .pushNamed('/chat', arguments: mydata.name);
+                          .pushNamed('/chat', arguments: mydata);
                     },
                     child: Text("Chat Dokter",
                         style: TextStyle(color: Colors.white, fontSize: 16)),
