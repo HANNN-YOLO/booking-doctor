@@ -1,4 +1,3 @@
-import 'package:booking_doctor/models/doctor.dart';
 import 'package:booking_doctor/providers/dokter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

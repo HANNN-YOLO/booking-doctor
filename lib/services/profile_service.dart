@@ -13,6 +13,7 @@ class ProfileService {
     try {
       final profilePath = _getProfilePath(daftar.role ?? 'pasien');
       await _database.child(profilePath).child(uid).set({
+        'kunci': uid,
         'nama': daftar.nama,
         'email': daftar.email,
         'nohp': daftar.nohp,

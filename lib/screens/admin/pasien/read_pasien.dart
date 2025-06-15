@@ -42,6 +42,20 @@ class ReadPasien extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: patientData['gambar'] != null &&
+                                patientData['gambar'].toString().isNotEmpty
+                            ? CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(patientData['gambar']),
+                                radius: 48,
+                              )
+                            : CircleAvatar(
+                                child: Icon(Icons.person, size: 48),
+                                radius: 48,
+                              ),
+                      ),
+                      SizedBox(height: 16),
                       Card(
                         child: Padding(
                           padding: EdgeInsets.all(16),
@@ -57,13 +71,23 @@ class ReadPasien extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 16),
-                              _buildInfoRow('Nama', patientData['name'] ?? '-'),
+                              _buildInfoRow(
+                                  'Nama',
+                                  patientData['nama'] ??
+                                      patientData['name'] ??
+                                      '-'),
                               _buildInfoRow(
                                   'Email', patientData['email'] ?? '-'),
                               _buildInfoRow(
-                                  'Telepon', patientData['phone'] ?? '-'),
+                                  'Telepon',
+                                  patientData['nohp']?.toString() ??
+                                      patientData['phone'] ??
+                                      '-'),
                               _buildInfoRow(
-                                  'Alamat', patientData['address'] ?? '-'),
+                                  'Alamat',
+                                  patientData['alamat'] ??
+                                      patientData['address'] ??
+                                      '-'),
                               _buildInfoRow('Tanggal Lahir',
                                   patientData['tgllahir'] ?? '-'),
                               _buildInfoRow('Usia',

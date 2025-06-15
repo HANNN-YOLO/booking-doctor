@@ -36,17 +36,44 @@ class UdPasien extends StatelessWidget {
                   return Card(
                     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ListTile(
-                      title: Text(patient['name'] ?? 'Nama tidak tersedia'),
-                      subtitle:
-                          Text(patient['email'] ?? 'Email tidak tersedia'),
+                      leading: patient.gambar != null &&
+                              patient.gambar!.isNotEmpty
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(patient.gambar!),
+                              radius: 28,
+                            )
+                          : CircleAvatar(
+                              child: Icon(Icons.person),
+                              radius: 28,
+                            ),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(patient.nama ?? 'Nama tidak tersedia'),
+                          Text('UID: ${patient.kunci ?? '-'}',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey[700])),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              'Umur: ${patient.tgllahir != null ? DateTime.now().year - patient.tgllahir!.year : '-'} tahun'),
+                          Text('Alamat: ${patient.alamat ?? '-'}'),
+                        ],
+                      ),
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
                         Navigator.pushNamed(
                           context,
                           '/read_pasien',
-                          arguments: patient['id'],
+                          arguments: patient.kunci,
                         );
                       },
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      isThreeLine: true,
                     ),
                   );
                 },

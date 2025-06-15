@@ -12,7 +12,7 @@ class ProfileProvider with ChangeNotifier {
   String? _error;
   bool _isProfileComplete = false;
   String? _role;
-  List<Map<String, dynamic>> _patients = [];
+  List<Daftar> _patients = [];
 
   // Getters
   Map<String, dynamic>? get profileData => _profileData;
@@ -20,7 +20,7 @@ class ProfileProvider with ChangeNotifier {
   String? get error => _error;
   bool get isProfileComplete => _isProfileComplete;
   String? get role => _role;
-  List<Map<String, dynamic>> get patients => _patients;
+  List<Daftar> get patients => _patients;
 
   int? _calculateAge(String? birthDateString) {
     // Log the input birthDateString for diagnostic purposes
@@ -259,7 +259,7 @@ class ProfileProvider with ChangeNotifier {
         _patients = data.entries.map((entry) {
           final patientData = Map<String, dynamic>.from(entry.value as Map);
           patientData['id'] = entry.key;
-          return patientData;
+          return Daftar.fromJson(entry.key, patientData);
         }).toList();
       } else {
         _patients = [];
@@ -322,6 +322,30 @@ class ProfileProvider with ChangeNotifier {
       await _database.child('pasien_profiles').child(patientId).remove();
       await getPatients(); // Refresh the list
       notifyListeners();
+    } catch (e) {
+      _setError(e.toString());
+      throw e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Get patient by email (untuk struktur flat)
+  Future<Map<String, dynamic>?> getPatientByEmail(String email) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      final snapshot = await _database.child('pasien_profiles').get();
+      if (snapshot.exists) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
+        for (var value in data.values) {
+          if (value is Map && value['email'] == email) {
+            return Map<String, dynamic>.from(value);
+          }
+        }
+      }
+      return null;
     } catch (e) {
       _setError(e.toString());
       throw e.toString();

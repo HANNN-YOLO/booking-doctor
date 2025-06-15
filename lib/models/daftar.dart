@@ -24,19 +24,21 @@ class Daftar {
       this.alamat,
       this.gambar});
 
-  factory Daftar.fromJson(String id, Map<String, dynamic> json) {
+  factory Daftar.fromJson(String kunci, Map<String, dynamic> json) {
     return Daftar(
-        id: id,
-        nama: json['nama'],
-        email: json['email'],
-        password: json['password'],
-        role: json['role'],
-        nohp: json['nohp'] != null ? int.parse(json['nohp'].toString()) : null,
-        tgllahir:
-            json['tgllahir'] != null ? DateTime.parse(json['tgllahir']) : null,
-        asal: json['asal'],
-        alamat: json['alamat'],
-        gambar: json['gambar']);
+      kunci: kunci,
+      id: json['id'],
+      nama: json['nama'],
+      email: json['email'],
+      password: json['password'],
+      role: json['role'],
+      nohp: json['nohp'] != null ? int.parse(json['nohp'].toString()) : null,
+      tgllahir:
+          json['tgllahir'] != null ? DateTime.tryParse(json['tgllahir']) : null,
+      asal: json['asal'],
+      alamat: json['alamat'],
+      gambar: json['gambar'],
+    );
   }
 
   Map<String, dynamic> toJson() {

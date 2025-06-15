@@ -90,7 +90,6 @@ class _KekuatanAdminState extends State<kekuatan_admin> {
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, ProfileProvider>(
       builder: (context, authProvider, profileProvider, child) {
-        final user = authProvider.user;
         final userProfile = profileProvider.profileData;
 
         return Scaffold(
