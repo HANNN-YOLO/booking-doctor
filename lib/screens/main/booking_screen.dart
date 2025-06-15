@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../providers/booking_provider.dart';
 import 'package:provider/provider.dart';
 import '../../providers/dokter_provider.dart';
 import '../../models/doctor.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-// import 'package:intl/intl.dart';
-// import 'package:provider/provider.dart';
-// import '../providers/booking_provider.dart';
 
 class BookingScreen {
   final String doctorKey;

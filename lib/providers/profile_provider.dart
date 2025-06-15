@@ -353,4 +353,43 @@ class ProfileProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  Future<List<Map<String, dynamic>>> getPatientsByAdminId(
+      String adminId) async {
+    try {
+      final patientsSnapshot = await _database.child('daftar').get();
+      List<Map<String, dynamic>> patientsList = [];
+
+      if (patientsSnapshot.value != null) {
+        final patients = patientsSnapshot.value as Map<dynamic, dynamic>;
+        patients.forEach((key, value) {
+          if (value['kunci'] == adminId) {
+            patientsList.add({
+              ...value,
+              'id': key,
+            });
+          }
+        });
+      }
+
+      return patientsList;
+    } catch (e) {
+      print('Error getting patients data: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllPatientsList() async {
+    final snapshot = await _database.child('pasien_profiles').get();
+    List<Map<String, dynamic>> patientsList = [];
+    if (snapshot.exists) {
+      final data = Map<String, dynamic>.from(snapshot.value as Map);
+      data.forEach((key, value) {
+        final patientData = Map<String, dynamic>.from(value as Map);
+        patientData['id'] = key;
+        patientsList.add(patientData);
+      });
+    }
+    return patientsList;
+  }
 }

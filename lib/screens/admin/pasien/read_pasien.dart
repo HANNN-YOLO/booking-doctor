@@ -3,6 +3,22 @@ import 'package:provider/provider.dart';
 import 'package:booking_doctor/providers/profile_provider.dart';
 
 class ReadPasien extends StatelessWidget {
+  int? hitungUmur(String? tgllahir) {
+    if (tgllahir == null || tgllahir.isEmpty) return null;
+    try {
+      final tgl = DateTime.parse(tgllahir.split('T').first);
+      final now = DateTime.now();
+      int umur = now.year - tgl.year;
+      if (now.month < tgl.month ||
+          (now.month == tgl.month && now.day < tgl.day)) {
+        umur--;
+      }
+      return umur;
+    } catch (e) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String? patientId =
@@ -71,6 +87,8 @@ class ReadPasien extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 16),
+                              // _buildInfoRow(
+                              //     'ID Pasien', patientData['id'] ?? '-'),
                               _buildInfoRow(
                                   'Nama',
                                   patientData['nama'] ??
@@ -91,37 +109,37 @@ class ReadPasien extends StatelessWidget {
                               _buildInfoRow('Tanggal Lahir',
                                   patientData['tgllahir'] ?? '-'),
                               _buildInfoRow('Usia',
-                                  '${patientData['usia'] ?? '-'} tahun'),
+                                  '${hitungUmur(patientData['tgllahir']) ?? '-'} tahun'),
                             ],
                           ),
                         ),
                       ),
                       SizedBox(height: 16),
-                      Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Informasi Medis',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[800],
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              _buildInfoRow('Golongan Darah',
-                                  patientData['golongan_darah'] ?? '-'),
-                              _buildInfoRow('Riwayat Penyakit',
-                                  patientData['riwayat_penyakit'] ?? '-'),
-                              _buildInfoRow(
-                                  'Alergi', patientData['alergi'] ?? '-'),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Card(
+                      //   child: Padding(
+                      //     padding: EdgeInsets.all(16),
+                      //     child: Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         Text(
+                      //           'Informasi Medis',
+                      //           style: TextStyle(
+                      //             fontSize: 18,
+                      //             fontWeight: FontWeight.bold,
+                      //             color: Colors.blue[800],
+                      //           ),
+                      //         ),
+                      //         SizedBox(height: 16),
+                      //         _buildInfoRow('Golongan Darah',
+                      //             patientData['golongan_darah'] ?? '-'),
+                      //         _buildInfoRow('Riwayat Penyakit',
+                      //             patientData['riwayat_penyakit'] ?? '-'),
+                      //         _buildInfoRow(
+                      //             'Alergi', patientData['alergi'] ?? '-'),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 );
