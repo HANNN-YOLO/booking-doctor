@@ -1,77 +1,119 @@
+import 'dart:async'; // Import for StreamSubscription
+
 import 'package:flutter/material.dart';
 import '../models/chat.dart'; // Import the Chat model
 import '../services/chat_service.dart'; // Import ChatService
+import 'package:flutter/foundation.dart';
 
-class ChatProvider extends ChangeNotifier {
+class ChatProvider with ChangeNotifier {
   final ChatService _chatService = ChatService(); // Instantiate ChatService
-  final List<Chat> _messages = []; // Initialize as empty List<Chat>
+  List<Chat> _chats = [];
+  bool _isLoading = false;
 
   String? _currentDoctorId;
   String? _currentDoctorSpecialty;
+  String? _currentPatientId;
 
-  List<Chat> get messages => _messages; // Return List<Chat>
+  StreamSubscription? _messagesSubscription; // To hold the stream subscription
 
-  // Set the current doctor context for the chat
-  void setCurrentDoctor(String doctorId, String specialty) {
-    bool needsNotification = false;
+  List<Chat> get chats => _chats;
+  bool get isLoading => _isLoading;
 
-    // If the active doctor is changing, clear messages from the previous chat.
-    if (_currentDoctorId != null && _currentDoctorId != doctorId) {
-      _messages.clear();
-      needsNotification = true; // State change: messages list cleared
-    }
+  List<Chat> get messages => _chats; // Return List<Chat>
 
-    // Update the doctor ID if it has changed.
-    if (_currentDoctorId != doctorId) {
+  // Set the current doctor and patient context for the chat
+  void setCurrentDoctor(String doctorId, String specialty, String patientId) {
+    if (_currentDoctorId != doctorId || _currentPatientId != patientId) {
+      _chats.clear();
       _currentDoctorId = doctorId;
-      needsNotification = true; // State change: doctorId updated
-    }
-
-    // Update the doctor specialty if it has changed.
-    if (_currentDoctorSpecialty != specialty) {
       _currentDoctorSpecialty = specialty;
-      needsNotification = true; // State change: specialty updated
-    }
-
-    // If any state that UI might depend on has changed, notify listeners.
-    if (needsNotification) {
+      _currentPatientId = patientId;
+      disposeListener();
+      loadChats(doctorId, patientId);
+      notifyListeners();
+    } else if (_currentDoctorSpecialty != specialty) {
+      _currentDoctorSpecialty = specialty;
       notifyListeners();
     }
   }
 
-  // Add a new message from the user and get a bot response
-  Future<void> addUserMessage(String messageText) async {
-    if (_currentDoctorId == null || _currentDoctorSpecialty == null) {
-      // Or handle this error more gracefully
-      print("Error: Doctor context not set in ChatProvider.");
+  // Mendapatkan chat untuk satu percakapan
+  Future<void> loadChats(String doctorId, String patientId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _messagesSubscription?.cancel();
+      _messagesSubscription = _chatService
+          .getMessagesForConversation(doctorId, patientId)
+          .listen((chats) {
+        _chats = chats;
+        notifyListeners();
+      });
+    } catch (e) {
+      print('Error loading chats: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Mengirim pesan dan mendapatkan respons dari chatbot
+  Future<void> sendMessage(String message) async {
+    if (_currentDoctorId == null || _currentPatientId == null) {
+      print('Error: No doctor or patient selected');
       return;
     }
 
-    // 1. Add user's message
-    final userMessage = Chat(
-      id_chat: DateTime.now().millisecondsSinceEpoch.toString(), // Temporary ID
-      id_doctor: _currentDoctorId!,
-      sender: 'user',
-      message: messageText,
-      timestamp: DateTime.now(),
-    );
-    _messages.add(userMessage);
-    notifyListeners(); // Notify for user message first so it appears instantly
+    try {
+      // Kirim pesan user
+      await _chatService.sendMessage(
+        doctorId: _currentDoctorId!,
+        patientId: _currentPatientId!,
+        message: message,
+        sender: 'user',
+      );
 
-    // 2. Get bot's response
-    final String botResponseText = await _chatService.getBotResponse(
-        messageText, _currentDoctorSpecialty!);
+      // Simulasi respons chatbot
+      String botResponse = _generateBotResponse(message);
 
-    // 3. Add bot's message
-    final botMessage = Chat(
-      id_chat: (DateTime.now().millisecondsSinceEpoch + 1)
-          .toString(), // Temporary ID, ensure uniqueness
-      id_doctor: _currentDoctorId!,
-      sender: 'doctor', // Or a constant for bot/doctor
-      message: botResponseText,
-      timestamp: DateTime.now(),
-    );
-    _messages.add(botMessage);
-    notifyListeners(); // Notify after bot message is added
+      // Kirim respons chatbot
+      await _chatService.sendMessage(
+        doctorId: _currentDoctorId!,
+        patientId: _currentPatientId!,
+        message: botResponse,
+        sender: 'doctor',
+      );
+    } catch (e) {
+      print('Error in sendMessage: $e');
+      rethrow;
+    }
+  }
+
+  // Fungsi sederhana untuk mensimulasikan respons chatbot
+  String _generateBotResponse(String userMessage) {
+    userMessage = userMessage.toLowerCase();
+
+    if (userMessage.contains('halo') || userMessage.contains('hai')) {
+      return 'Halo! Saya adalah asisten dokter. Apa yang bisa saya bantu?';
+    } else if (userMessage.contains('sakit')) {
+      return 'Mohon jelaskan lebih detail tentang keluhan Anda. Kapan mulai terasa sakitnya?';
+    } else if (userMessage.contains('demam')) {
+      return 'Berapa suhu tubuh Anda saat ini? Apakah ada gejala lain yang menyertai?';
+    } else {
+      return 'Mohon maaf, saya perlu informasi lebih detail untuk bisa membantu Anda dengan lebih baik.';
+    }
+  }
+
+  // Dispose the listener when the provider is disposed
+  void disposeListener() {
+    _messagesSubscription?.cancel();
+    _messagesSubscription = null;
+  }
+
+  @override
+  void dispose() {
+    disposeListener(); // Clean up the listener
+    super.dispose();
   }
 }

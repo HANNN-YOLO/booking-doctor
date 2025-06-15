@@ -1,12 +1,108 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+import '../models/chat.dart'; // Ensure this path is correct
+
 class ChatService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String _collection = 'chats';
+
+  String getConversationId(String doctorId, String patientId) {
+    return '${doctorId}_$patientId';
+  }
+
+  // Mengirim pesan baru ke subcollection messages
+  Future<void> sendMessage({
+    required String doctorId,
+    required String patientId,
+    required String message,
+    required String sender,
+  }) async {
+    try {
+      final conversationId = getConversationId(doctorId, patientId);
+      final chatDoc = _firestore.collection(_collection).doc(conversationId);
+      // Cek apakah dokumen percakapan sudah ada
+      final docSnapshot = await chatDoc.get();
+      if (!docSnapshot.exists) {
+        // Ambil data dokter dari Firestore
+        final doctorSnap =
+            await _firestore.collection('doctor').doc(doctorId).get();
+        final doctorData = doctorSnap.data() ?? {};
+        final doctorName = doctorData['name'] ?? '';
+        final doctorSpecialty = doctorData['specialty'] ?? '';
+        // Ambil data pasien dari Realtime Database (dengan path benar)
+        final patientSnap = await FirebaseDatabase.instance
+            .ref('pasien_profiles/$patientId')
+            .get();
+        final patientData = patientSnap.value as Map?;
+        String patientName = '';
+        int patientAge = 0;
+        if (patientData != null) {
+          patientName = patientData['nama'] ?? '';
+          if (patientData['tgllahir'] != null) {
+            final birthDate = DateTime.tryParse(patientData['tgllahir']);
+            if (birthDate != null) {
+              final now = DateTime.now();
+              patientAge = now.year -
+                  birthDate.year -
+                  ((now.month < birthDate.month ||
+                          (now.month == birthDate.month &&
+                              now.day < birthDate.day))
+                      ? 1
+                      : 0);
+            }
+          }
+        }
+        // Buat dokumen percakapan dengan data lengkap
+        await chatDoc.set({
+          'doctorId': doctorId,
+          'doctorName': doctorName,
+          'doctorSpecialty': doctorSpecialty,
+          'patientId': patientId,
+          'patientName': patientName,
+          'patientAge': patientAge,
+        }, SetOptions(merge: true));
+      }
+      // Tambahkan pesan ke subcollection messages
+      final chat = Chat(
+        sender: sender,
+        message: message,
+        timestamp: DateTime.now(),
+      );
+      await chatDoc.collection('messages').add(chat.toMap());
+    } catch (e) {
+      print('Error sending message: $e');
+      rethrow;
+    }
+  }
+
+  // Mendapatkan stream pesan untuk satu percakapan
+  Stream<List<Chat>> getMessagesForConversation(
+      String doctorId, String patientId) {
+    final conversationId = getConversationId(doctorId, patientId);
+    return _firestore
+        .collection(_collection)
+        .doc(conversationId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Chat.fromMap(doc.data())).toList());
+  }
+
+  // Mendapatkan semua percakapan untuk dokter tertentu
+  Stream<QuerySnapshot> getAllConversationsForDoctor(String doctorId) {
+    return _firestore
+        .collection(_collection)
+        .where('doctorId', isEqualTo: doctorId)
+        .snapshots();
+  }
+
+  // Fungsi respons bot (masih bisa digunakan)
   Future<String> getBotResponse(String userMessage, String specialty) async {
-    // Simulate a small delay, like a real person typing
     await Future.delayed(Duration(milliseconds: 500 + userMessage.length * 10));
-
     String messageLowerCase = userMessage.toLowerCase();
-
     switch (specialty.toLowerCase()) {
-      case 'umum': // General Practitioner
+      case 'umum':
         if (messageLowerCase.contains('halo') ||
             messageLowerCase.contains('selamat pagi')) {
           return 'Halo! Ada yang bisa saya bantu hari ini?';
@@ -19,7 +115,7 @@ class ChatService {
         } else {
           return 'Maaf, saya belum sepenuhnya mengerti. Bisa Anda jelaskan keluhan utama Anda?';
         }
-      case 'anak': // Pediatrician
+      case 'anak':
         if (messageLowerCase.contains('halo')) {
           return 'Halo Bunda/Ayah! Ada yang bisa saya bantu terkait kesehatan si kecil?';
         } else if (messageLowerCase.contains('demam anak') ||
@@ -31,7 +127,7 @@ class ChatService {
         } else {
           return 'Saya di sini untuk membantu masalah kesehatan anak. Apa keluhan spesifik si kecil?';
         }
-      case 'kandungan': // Obstetrician/Gynecologist
+      case 'kandungan':
         if (messageLowerCase.contains('halo') ||
             messageLowerCase.contains('selamat pagi')) {
           return 'Halo! Ada yang bisa saya bantu terkait kesehatan kandungan atau kewanitaan?';
@@ -57,8 +153,6 @@ class ChatService {
         } else {
           return 'Saya adalah spesialis jantung. Apa yang bisa saya bantu?';
         }
-      // Add more cases for other specialties found in dummy_dokter.dart if desired
-      // Example: 'kulit dan kelamin', 'tht', 'mata', 'bedah', 'saraf'
       case 'kulit dan kelamin':
         if (messageLowerCase.contains('gatal') ||
             messageLowerCase.contains('ruam')) {
@@ -82,8 +176,6 @@ class ChatService {
           return 'Konsultasi dokter spesialis mata. Ada keluhan pada mata Anda?';
         }
       default:
-        // It's good practice to ensure specialty is not empty before using it in the default message.
-        // However, the prompt implies specialty will be a valid string.
         return 'Selamat datang di layanan konsultasi. Saya adalah dokter spesialis virtual di bidang ${specialty}. Apa yang bisa saya bantu?';
     }
   }
