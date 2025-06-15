@@ -59,7 +59,7 @@ class RegisterScreen extends StatelessWidget {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               value: authProvider.selectedRole,
-                              items: ['Admin', 'Pasien'].map((String role) {
+                              items: ['Pasien'].map((String role) {
                                 return DropdownMenuItem<String>(
                                   value: role,
                                   child: Text(role),
