@@ -40,7 +40,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   intl: ^0.20.2
   day_night_time_picker: ^1.1.0
-  firebase_core: ^2.27.1
+  firebase_core: ^2.32.0
   cloud_firestore: ^4.15.8 # Untuk simpan dokter dan booking
   firebase_database: ^10.4.10 # Untuk chat real-time
   firebase_auth: ^4.17.9
@@ -48,6 +48,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.3.10 # (cek versi terbaru)
   table_calendar: ^3.0.9 # Menambahkan dependensi table_calendar
+  go_router: ^15.2.0
 
 dev_dependencies:
   flutter_test:
