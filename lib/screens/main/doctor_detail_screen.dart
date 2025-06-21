@@ -317,12 +317,7 @@ class DoctorDetailScreen extends StatelessWidget {
                                       return _buildScheduleItem(
                                         time.time,
                                         isBooked,
-                                        () => _showBookingDialog(
-                                          context,
-                                          mydata,
-                                          time.date,
-                                          time.time,
-                                        ),
+                                        null,
                                       );
                                     }).toList(),
                                   );
