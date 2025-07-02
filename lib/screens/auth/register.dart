@@ -13,11 +13,19 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // Jika sudah login, redirect ke dashboard
+    if (authProvider.isAuthenticated) {
+      Future.microtask(() {
+        Navigator.pushReplacementNamed(context, '/');
+      });
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          Navigator.pushNamed(context, '/login');
+          Navigator.pushReplacementNamed(context, '/login');
         }
       },
       child: Consumer<AuthProvider>(
