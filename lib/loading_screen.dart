@@ -4,19 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Logout otomatis setiap aplikasi dibuka
+    FirebaseAuth.instance.signOut();
+
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         // Menggunakan addPostFrameCallback untuk memastikan navigasi terjadi setelah build selesai.
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (snapshot.connectionState == ConnectionState.active) {
-            if (snapshot.hasData) {
-              Navigator.pushReplacementNamed(
-                  context, '/'); // Pengguna login, ke halaman utama
-            } else {
-              Navigator.pushReplacementNamed(
-                  context, '/login'); // Pengguna tidak login, ke halaman login
-            }
+            // Karena sudah signOut, user pasti belum login
+            Navigator.pushReplacementNamed(context, '/login');
           }
         });
 
