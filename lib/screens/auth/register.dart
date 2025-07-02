@@ -17,7 +17,7 @@ class RegisterScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          Navigator.pushReplacementNamed(context, '/login');
+          Navigator.pushNamed(context, '/login');
         }
       },
       child: Consumer<AuthProvider>(
