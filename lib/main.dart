@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
           '/loading': (context) => LoadingScreen(),
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
-          '/': (context) => SearchScreen(),
+          '/dashboard': (context) => SearchScreen(),
           '/detail': (context) => DoctorDetailScreen(),
           '/history': (context) => HistoryScreen(),
           '/notifikasi': (context) => NotifikasiScreen(),

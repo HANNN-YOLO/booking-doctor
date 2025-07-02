@@ -163,7 +163,7 @@ class ProfilPasien extends StatelessWidget {
             backgroundColor: Colors.blue[700],
             onTap: (index) {
               if (index == 0) {
-                Navigator.pushNamed(context, '/');
+                Navigator.pushNamed(context, '/dashboard');
               } else if (index == 1) {
                 Navigator.pushNamed(context, '/profil_pasien');
               }

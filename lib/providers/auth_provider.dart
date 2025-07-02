@@ -52,7 +52,7 @@ class AuthProvider with ChangeNotifier {
     if (_role == 'Admin') {
       Navigator.pushReplacementNamed(context, '/kekuatan_admin');
     } else if (_role == 'Pasien') {
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.pushReplacementNamed(context, '/dashboard');
     }
   }
 
@@ -130,7 +130,8 @@ class AuthProvider with ChangeNotifier {
         _role = userProfile?['role'] as String?;
 
         // Set role di ProfileProvider
-        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        final profileProvider =
+            Provider.of<ProfileProvider>(context, listen: false);
         if (_role != null) {
           profileProvider.setRole(_role!);
           await profileProvider.loadProfile(_user!.uid, context);
@@ -160,11 +161,12 @@ class AuthProvider with ChangeNotifier {
       await _authService.logout();
       _user = null;
       _role = null;
-      
+
       // Clear profile data
-      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      final profileProvider =
+          Provider.of<ProfileProvider>(context, listen: false);
       profileProvider.clearProfile();
-      
+
       pemberitahuan('Logout berhasil!', context);
       Navigator.pushReplacementNamed(context, '/login');
       notifyListeners();

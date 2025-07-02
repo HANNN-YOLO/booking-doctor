@@ -17,7 +17,7 @@ class RegisterScreen extends StatelessWidget {
     // Jika sudah login, redirect ke dashboard
     if (authProvider.isAuthenticated) {
       Future.microtask(() {
-        Navigator.pushReplacementNamed(context, '/');
+        Navigator.pushReplacementNamed(context, '/dashboard');
       });
       return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
