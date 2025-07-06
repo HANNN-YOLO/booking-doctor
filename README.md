@@ -1,5 +1,9 @@
 # booking_doctor
 
+Mata kuliah :
+1. Pemrograman Mobile Lintas Platform
+2. Basis Data NoSQL
+
 Untuk Menjalankan codingan ini maka kita akan menyiapkan ruang lingkup yang akan digunakan
 1. Instal Java 21
    1. Kita bisa download nya di chrome dengan menggunakan link : (https://www.oracle.com/ae/java/technologies/downloads/#jdk21-windows)
@@ -36,5 +40,36 @@ Untuk Menjalankan codingan ini maka kita akan menyiapkan ruang lingkup yang akan
    3. Setelah kita download maka kita bisa instal di laptop dan untuk konfigrasi lakukan secara default
    4. Setelah kita masuk di vscode maka kita pergi ke Extension untuk download Code runner, Flutter, Dart
 
-#Perlu di
-9. Login Github 
+Perlu diketahui untuk menjalankan framework flutter harus terhubung dengan koneksi internet 
+
+8. Menyiapkan Database
+   1. kita bisa menggunakan chrome dengan link : (https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChsSEwiC_-mW76eOAxWepWYCHRX-DPUYACICCAEQABoCc20&co=1&ase=2&gclid=Cj0KCQjwvajDBhCNARIsAEE29WqH1h3oh0WfED7ly377NX5UDISun-dQQo7_-WJTfOtnmrQYWv-9WOAaAgh_EALw_wcB&ohost=www.google.com&cid=CAESVeD2Minlwp1YwqdmM2gx5d7j71IXVmhmlzqjCKinYzKKDzfwCzllnSbznvt711_ciXMtKtbm_Rvcuf8aGppQC7dIJBNdYuAD_z4FJC4jl4COOPBrNZM&category=acrcp_v1_45&sig=AOD64_0Th8KdNScvxvOZZUrqTMotMo-cSg&q&nis=4&adurl&ved=2ahUKEwjXruaW76eOAxXc1DgGHbjWD9MQ0Qx6BAgJEAE)
+   2. Setelah itu kita bisa klik "Go to console"
+   3. Lalu klik "Get started with a Firebase project" atau "Create a Firebase Project"
+   4. Masukkan Nama projeknya lalu centang lalu klik Continue
+   5. jika kita ingin menggunakan AI assistank maka centang kalau tidak jangan di centang lalu Continue
+   6. Kita perlu nyalakan Google Analytic bawaaan Firebase maka centang lalu klik Continue
+   7. Analytic Location kita pilih indonesia lalu centang semuanya lalu klik Project
+   8. Setelah menunggu beberapa saat maka klik Continue lagi
+   9. Maka kita pilih Android
+   10. Lalu kita mmasukkan Android package name berada di Projek/android/app/build.gradle.kts lalu cari codingan androdi dibagian namespace nya lalu salin dan tempelkan di Android Package.name
+   11. lalu isi App nickname samakan saja dengan nama android package.name bedanya hapus di bagian com.example lalu klik register
+   12. Setelah itu kita download google-servcices.json lalu tempatkan di file Projek/android/app/ lalu klik Next
+   14. Setelah itu kita masuk di SDK Fiebase (pilih apakah kotlin atau groovy)di bagian pertama salinan nya akan masuk di Projek/android/ dan salin
+   15. Setelah itu kita masuk di SDK Firebase  (pilih apakah kotlin atau groovy) di bagian kedua salinan nya akan masuk di Projek/android/app dan salin
+   16. Setelah semuanya sudah di salin maka kita bisa klik Nex
+   17. Setelah iitu klik lagi Go to console
+   18. Setelah itu kita masuk di build dan pilihalah modul apa yang akan dgiunakan (Authentiication, Firestore, Realtime)
+   19. Setelah itu kita klik "Create Database" atau "Get Started" di masing-masing modul yang digunakan
+       
+9. Hosting hanya untuk akses di web (Opsional)
+    1. pakai modul Hosting yang ada di Firebase 
+    2. sorce code harus berada di github
+    3. buka codinngan yang terhubung dengan akun github dan git lokal yang ada di laptop
+    4. ketik di terminal di codingan git lokal npm install -g firebase-tools
+    5. ketik firebaase login
+    6. ketik firebase init
+    7. ketik firebase deploy
+    8. ketik firebasefire configure
+    9. commit & push terlebih dahulu
+    10. ketik firebase deploy
